@@ -1,0 +1,49 @@
+textarea.pycode-answer, table.pycode-test-results td,
+.testcaseexpression, .testcaseresult, .testcasestdin { 
+	font-family:courier,monospace;
+}
+
+div.pycode-examples {
+    padding-bottom: 10px;
+}
+
+
+table.pycode-test-results td, table.pycode-test-results th, 
+table.pycodeexamples td, table.pycodeexamples th {
+    border: 1px solid #B0B0B0;
+}
+
+
+div.pycode-test-results-good {
+    background-color: #AAFFAA;
+}
+
+
+div.pycode-test-results-bad {
+    background-color: #FFAAAA;
+}
+
+div.pycode-feedback {
+	border:none;
+	padding-bottom: 15px;
+}
+
+input[id~="grading"] {
+    color:grey;
+}
+
+p.pycode-spacer {
+    font-size: 5px;
+}
+
+
+
+/* Add lines I seem to have somehow overridden in styles.php */
+
+tr.r0 td {
+    background-color:#F5F5F5
+}
+
+tr.r1 td {
+    background-color:#E5E5E5
+}
