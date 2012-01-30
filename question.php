@@ -24,7 +24,9 @@
  */
 
 /*
- * Useful SQL to see what's happening in the DB during development
+ * Useful SQL to see what's happening in the DB during development.
+ * Written here simply because I wanted to write it down somewhere and why
+ * not here.
 
 select q.id as qid, qa.id as qaid, qas.id as qasid, state, qasd.name, value
 from mdl_question as q, 

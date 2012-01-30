@@ -36,6 +36,7 @@ Options:
                   the semispace or generation GCs.
     --timeout=N   limit execution time to N (real-time) seconds.
     --log=FILE    log all user input into the FILE
+	--verbose     log all proxied system calls.
 '''
 
 import os
@@ -52,7 +53,9 @@ from shutil import rmtree
 from tempfile import mkstemp, mkdtemp
 from pypy.translator.sandbox.sandlib import SimpleIOSandboxedProc, VirtualizedSandboxedProc
 from pypy.translator.sandbox.vfs import Dir, RealDir, RealFile
-from pypy.tool.lib_pypy import LIB_ROOT
+
+import pypy
+LIB_ROOT = os.path.dirname(os.path.dirname(pypy.__file__))
 
 CURR_DIR = os.path.dirname(os.path.realpath(__file__))
 EXECUTABLE = os.path.join(CURR_DIR, "pypy-sandbox")
@@ -63,9 +66,10 @@ class PyPySandboxedProc(VirtualizedSandboxedProc, SimpleIOSandboxedProc):
     virtual_env = {}
     virtual_console_isatty = True
 
-    def __init__(self, executable, arguments, tmpdir=None):
+    def __init__(self, executable, arguments, tmpdir=None, debug=False):
         self.executable = executable = os.path.abspath(executable)
         self.tmpdir = tmpdir
+        self.debug = debug
         super(PyPySandboxedProc, self).__init__([self.argv0] + arguments,
                                                 executable=executable)
 
@@ -139,87 +143,97 @@ for (outcome, output) in results:
     
 
 if __name__ == '__main__':
-    HEAP_MB = 50  # Default heap size (MB)
-    try:
-        vfsRoot = None
-        from getopt import gnu_getopt      # In this version options apply only to this prog
-        options, arguments = gnu_getopt(sys.argv[1:], '', 
-                                    ['heapsize=', 'timeout=', 'log='])
+	HEAP_MB = 50  # Default heap size (MB)
+	try:
+		vfsRoot = None
+		from getopt import gnu_getopt      # In this version options apply only to this prog
+		options, arguments = gnu_getopt(sys.argv[1:], '', 
+				       ['heapsize=', 'timeout=', 'log='', verbose', 'help'])
 
-        timeout = 5  # Default timeout of 5 sec
-        logfile = None
-        bytes = HEAP_MB * 1024 * 1024  # Default heap size of 50MB
+		timeout = 5  # Default timeout of 5 sec
+		logfile = None
+		debug = False
+		bytes = HEAP_MB * 1024 * 1024  # Default heap size of 50MB
 
-        for option, value in options:
-            if option == '--heapsize':
-                value = value.lower()
-                if value.endswith('k'):
-                    bytes = int(value[:-1]) * 1024
-                elif value.endswith('m'):
-                    bytes = int(value[:-1]) * 1024 * 1024
-                elif value.endswith('g'):
-                    bytes = int(value[:-1]) * 1024 * 1024 * 1024
-                else:
-                    bytes = int(value)
-                if bytes <= 0:
-                    raise ValueError
-                if bytes > sys.maxint:
-                    raise OverflowError("--heapsize maximum is %d" % sys.maxint)
-            elif option == '--timeout':
-                timeout = int(value)
-            elif option == '--log':
-                logfile = value    
-            else:
-                raise ValueError(option)
+		def help():
+			print >> sys.stderr, __doc__
+			sys.exit(2)
 
-        if len(arguments) != 1:
-            raise Exception("Bad call to pycodeTest.py: {0} args".format(str(len(arguments))))
+		for option, value in options:
+			if option == '--heapsize':
+				value = value.lower()
+				if value.endswith('k'):
+					bytes = int(value[:-1]) * 1024
+				elif value.endswith('m'):
+					bytes = int(value[:-1]) * 1024 * 1024
+				elif value.endswith('g'):
+					bytes = int(value[:-1]) * 1024 * 1024 * 1024
+				else:
+					bytes = int(value)
+				if bytes <= 0:
+					raise ValueError
+				if bytes > sys.maxint:
+					raise OverflowError("--heapsize maximum is %d" % sys.maxint)
+			elif option == '--timeout':
+				timeout = int(value)
+			elif option == '--log':
+				logfile = value
+			elif option in ['-v', '--verbose']:
+				debug = True
+			elif option in ['-h', '--help']:
+				help()   
+			else:
+				raise ValueError(option)
+
+		if len(arguments) != 1:
+			raise Exception("Bad call to pycodeTest.py: {0} args".format(str(len(arguments))))
 
         # Bug in sandbox prevents passing arguments[0] directly through
         # to sandbox program, so decode then reserialize with marshal instead
         
-        testSpec = marshal.dumps(json.loads(b64decode(arguments[0]))).encode('hex')
-        vfsRoot = mkdtemp(dir="/tmp", prefix="pycode_")
-        shutil.copy(CURR_DIR + '/pycodeClasses.py', vfsRoot)
-        (pytestfnum, pytestfname) = mkstemp(suffix=".py", prefix="pyblah", dir=vfsRoot)
-        pytestf = os.fdopen(pytestfnum, "w")
-        testFile = makeTester(testSpec)
-        pytestf.write(testFile)
+		testSpec = marshal.dumps(json.loads(b64decode(arguments[0]))).encode('hex')
+		vfsRoot = mkdtemp(dir="/tmp", prefix="pycode_")
+		shutil.copy(CURR_DIR + '/pycodeClasses.py', vfsRoot)
+		(pytestfnum, pytestfname) = mkstemp(suffix=".py", prefix="pyblah", dir=vfsRoot)
+		pytestf = os.fdopen(pytestfnum, "w")
+		testFile = makeTester(testSpec)
+		pytestf.write(testFile)
 
 # Now execute the test file on the pypy sandbox
 
-        pytestf.close()
-        fname = pytestfname.split('/')[-1]
+		pytestf.close()
+		fname = pytestfname.split('/')[-1]
 
-        # Note addition of -S option to prevent loading of site directory.
-        # See email/pypy blog from Ned Batchelder 10 - 12 Dec 2011.
-        args = ['--heapsize', str(bytes), '-S'] + [fname]
-        # now = time()
+		# Note addition of -S option to prevent loading of site directory.
+		# See email/pypy blog from Ned Batchelder 10 - 12 Dec 2011.
+		args = ['--heapsize', str(bytes), '-S'] + [fname]
+		# now = time()
+
+		sandproc = PyPySandboxedProc(EXECUTABLE, args, tmpdir=vfsRoot,
+										debug=debug)
+		sandproc.settimeout(timeout, interrupt_main=True)
+		if logfile is not None:
+			sandproc.setlogfile(logfile)
+
+		try:
+			returnCode = sandproc.interact()
+			if returnCode > 0:
+				raise Exception("Unknown error")
+			if returnCode < 0:
+				raise Exception(signal_name(-returnCode) + " (timeout or too much memory?)")
+		finally:
+			sandproc.kill()
+		
+		# print "Sandbox time: ", time() - now
+	
+	except Exception, e:
+		print 'Runtime Error'
+		print str(e).encode('hex')
         
-        sandproc = PyPySandboxedProc(EXECUTABLE, args, tmpdir=vfsRoot)
-        sandproc.settimeout(timeout, interrupt_main=True)
-        if logfile is not None:
-            sandproc.setlogfile(logfile)
-        
-        try:
-            returnCode = sandproc.interact()
-            if returnCode > 0:
-                raise Exception("Unknown error")
-            if returnCode < 0:
-                raise Exception(signal_name(-returnCode) + " (timeout or too much memory?)")
-        finally:
-            sandproc.kill()
-            
-        # print "Sandbox time: ", time() - now
-            
-    except Exception, e:
-        print 'Runtime Error'
-        print str(e).encode('hex')
-        
-    finally:
-        if vfsRoot is not None:
-            #rmtree(vfsRoot)
-            pass
+	finally:
+		if vfsRoot is not None:
+			rmtree(vfsRoot)
+			pass
 
 
 

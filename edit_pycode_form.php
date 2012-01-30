@@ -26,7 +26,8 @@ defined('MOODLE_INTERNAL') || die();
  * @author 		Richard Lobb richard.lobb@canterbury.ac.nz
  * @license 	http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
-define("NUM_TESTCASES_START", 5);
+define("NUM_TESTCASES_START", 5); // Num empty test cases with new questions
+define("NUM_TESTCASES_ADD", 3);   // Extra empty test cases to add
 
 /**
  * pycode editing form definition.
@@ -47,7 +48,13 @@ class qtype_pycode_edit_form extends question_edit_form {
         $mform->addElement('static', 'answersinstruct');
         $mform->closeHeaderBefore('answersinstruct');
         $gradeoptions = array(); // Unused
-        $this->add_per_answer_fields($mform, get_string('testcase', 'qtype_pycode'), $gradeoptions, NUM_TESTCASES_START);
+        if (isset($this->question->testcases)) {
+            $numTestcases = count($this->question->testcases) + NUM_TESTCASES_ADD;
+        }
+        else {
+            $numTestcases = NUM_TESTCASES_START;
+        }
+        $this->add_per_answer_fields($mform, get_string('testcase', 'qtype_pycode'), $gradeoptions, $numTestcases);
         $this->add_interactive_settings();
     }
     
@@ -71,9 +78,7 @@ class qtype_pycode_edit_form extends question_edit_form {
         $repeated[] = & $mform->createElement('checkbox', 'useasexample', get_string('useasexample', 'qtype_pycode'), false);
         $repeated[] = & $mform->createElement('checkbox', 'hidden', get_string('hidden', 'qtype_pycode'), false);
         $repeatedoptions['output']['type'] = PARAM_RAW;
-
-        // TODO: determine whether the following line actually is necessary/does anything
-        $answersoption = 'testcases';   // Name of $question->options field used to hold the testcases
+        $answersoption = '';  // Not actually using the options field to hold answers
         return $repeated;
     }
 
@@ -86,6 +91,10 @@ class qtype_pycode_edit_form extends question_edit_form {
     
 
     function data_preprocessing($question) {
+        // Although it's not wildly obvious from the documentation, this method
+        // needs to set up fields of the current question whose names match those
+        // specified in get_per_answer_fields. These are used to load the
+        // data into the form.
         if (isset($question->testcases)) { // Reloading a saved question?
             $question->shellinput = array();
             $question->output = array();
