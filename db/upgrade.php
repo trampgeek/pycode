@@ -129,7 +129,7 @@ function xmldb_qtype_pycode_upgrade($oldversion) {
         }
         $rs->close();
         // pycode savepoint reached
-        upgrade_plugin_savepoint(true, 2012013101, 'qtype', 'pycode');
+        upgrade_plugin_savepoint(true, 2012013102, 'qtype', 'pycode');
     }
  
     return $result;
