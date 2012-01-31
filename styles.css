@@ -1,6 +1,7 @@
 textarea.pycode-answer, table.pycode-test-results td,
 .testcaseexpression, .testcaseresult, .testcasestdin { 
 	font-family:courier,monospace;
+        width:100%;
 }
 
 div.pycode-examples {

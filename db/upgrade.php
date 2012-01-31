@@ -1,6 +1,5 @@
 <?php
  
-define('MODIFY_ONE_LINE_QUESTIONS', FALSE);
 
 function xmldb_qtype_pycode_upgrade($oldversion) {
     global $CFG, $DB;
@@ -88,10 +87,10 @@ function xmldb_qtype_pycode_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2011121545, 'qtype', 'pycode');
     }
     
-    // Version of 19 December 2011 modifies all existing questions to use 
+    // Version of 31 January 2012 modifies all existing questions to use 
     // 'print f(x)' type tests rather than the shell-input version with just f(x)
     
-    if ($oldversion < 2011121914 && MODIFY_ONE_LINE_QUESTIONS) {
+    if ($oldversion < 2012013101) {
         $rs = $DB->get_recordset_sql('
                 SELECT * from {question_pycode_testcases}');
         foreach ($rs as $record) {
@@ -110,7 +109,7 @@ function xmldb_qtype_pycode_upgrade($oldversion) {
         }
         $rs->close();
         // pycode savepoint reached
-        upgrade_plugin_savepoint(true, 2011121914, 'qtype', 'pycode');
+        upgrade_plugin_savepoint(true, 2012013101, 'qtype', 'pycode');
     }
     
  
