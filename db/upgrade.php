@@ -96,8 +96,8 @@ function xmldb_qtype_pycode_upgrade($oldversion) {
         foreach ($rs as $record) {
             $testInput = trim($record->shellinput);
             if ($testInput &&
-                strstr($testInput, "\n") === FALSE &&
-                strstr($testInput, 'print ') !== 0 ) {
+                strpos($testInput, "\n") === FALSE &&
+                strpos($testInput, 'print ') !== 0 ) {
                 // Single line input not starting with print: a candidate for update
                     $record->shellinput = "print " . $testInput;
                     $matches = array();
@@ -111,7 +111,26 @@ function xmldb_qtype_pycode_upgrade($oldversion) {
         // pycode savepoint reached
         upgrade_plugin_savepoint(true, 2012013101, 'qtype', 'pycode');
     }
+ 
+    // Fix up bug in last upgrade -- replace all 'print print' occurrences
+    // with a single print
     
+    if ($oldversion < 2012013102) {
+        $rs = $DB->get_recordset_sql('
+                SELECT * from {question_pycode_testcases}');
+        foreach ($rs as $record) {
+            $testInput = trim($record->shellinput);
+            if ($testInput &&
+                strpos($testInput, 'print print') === 0 ) {
+                // Input starting with 'print print' -- oops
+                    $record->shellinput = substr($testInput, 6);
+                    $DB->update_record('question_pycode_testcases', $record);
+            }
+        }
+        $rs->close();
+        // pycode savepoint reached
+        upgrade_plugin_savepoint(true, 2012013101, 'qtype', 'pycode');
+    }
  
     return $result;
 }
