@@ -1,7 +1,11 @@
 textarea.pycode-answer, table.pycode-test-results td,
+table.pycodeexamples td,
 .testcaseexpression, .testcaseresult, .testcasestdin { 
-	font-family:courier,monospace;
-        width:100%;
+    font-family:courier,monospace;
+}
+
+textarea.pycode-answer {
+    width:100%;
 }
 
 div.pycode-examples {
@@ -12,6 +16,10 @@ div.pycode-examples {
 table.pycode-test-results td, table.pycode-test-results th, 
 table.pycodeexamples td, table.pycodeexamples th {
     border: 1px solid #B0B0B0;
+}
+
+table.pycode-test-results .header, table.pycodeexamples .header {
+    text-align: left;
 }
 
 

@@ -297,7 +297,8 @@ class qtype_pycode_renderer extends qtype_renderer {
     // Return a count of the number of non-empty stdins and non-empty shell
     // inputs in the given list of test objects or examples
     private function countBits($tests) {
-        $numStds = $numShell = 0;
+        $numStds = 0;
+        $numShell = 0;
         foreach ($tests as $test) {
             if (!empty($test->stdin)) {
                 $numStds++;
