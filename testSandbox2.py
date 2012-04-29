@@ -6,9 +6,9 @@ import os
 import marshal
 import subprocess
 
-studentCode = "def blah():\n   return 'a\\nb\\n'"
-expression = "print blah(),"
-result = "a\nb"
+studentCode = "def num_rushes(a,b,c):\n x = 0.95\n y = 0.95\n return 1"
+expression = "print num_rushes(10, 10, 9)"
+result = "1"
 testSetEncoded = base64.encodestring(json.dumps([studentCode, [(expression, result)]]))
 print testSetEncoded
 
@@ -25,4 +25,4 @@ try:
         print lines[i+1].decode('hex')
 except subprocess.CalledProcessError, e:
     print "*** Error on invoking sandbox: ", e
-                               
+

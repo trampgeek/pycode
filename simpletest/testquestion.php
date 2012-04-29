@@ -75,8 +75,9 @@ class qtype_pycode_question_test extends UnitTestCase {
             $err = $e->getMessage();
             debugging("Exception $err on calling sandboxed pypy");
     	}
+        //var_dump($lines);
         $this->assertEqual($lines[0], 'Yes');
-        $this->assertEqual(decodeHex($lines[1]), '2');
+        $this->assertEqual(decodeHex($lines[1]), "2\n");
     }
 
     
@@ -93,7 +94,7 @@ class qtype_pycode_question_test extends UnitTestCase {
         foreach ($testResults as $tr) {
             $i++;
             $this->assertEqual($tr->outcome, 'Yes');
-            $this->assertEqual($tr->expected, $tr->output);
+            $this->assertEqual(trim($tr->expected), trim($tr->output));
             $this->assertEqual($tr->mark, 1);
             $this->assertEqual($tr->hidden, $i == $n ? 1 : 0); // last one hidden
         }
@@ -172,7 +173,7 @@ EOCODE;
         foreach ($testResults as $tr) {
             $i++;
             $this->assertEqual($tr->outcome, 'Yes');
-            $this->assertEqual($tr->expected, $tr->output);
+            $this->assertEqual(trim($tr->expected), trim($tr->output));
             $this->assertEqual($tr->mark, 1);
             $this->assertEqual($tr->hidden, $i == $n ? 1 : 0); // last one hidden
         }
@@ -242,7 +243,7 @@ EOCODE;
         $this->assertTrue(isset($result[2]['_testresults']));
         $testResults = unserialize($result[2]['_testresults']);
         $this->assertEqual(count($testResults), 2);
-        $this->assertEqual($testResults[0]->output, 'Exception');
+        $this->assertEqual(trim($testResults[0]->output), 'Exception');
         $this->assertEqual($testResults[1]->output, "Yes\nYes\nNo\nNo\nYes\nNo\n");
      } 
 }
