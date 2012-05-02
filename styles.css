@@ -12,6 +12,9 @@ div.pycode-examples {
     padding-bottom: 10px;
 }
 
+div.outcome {      
+    overflow: auto;
+}
 
 table.pycode-test-results td, table.pycode-test-results th, 
 table.pycodeexamples td, table.pycodeexamples th {
