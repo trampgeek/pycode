@@ -68,9 +68,6 @@ class qtype_pycode_question extends question_graded_automatically {
      * @return question_behaviour the new behaviour object.
      */
     public function make_behaviour(question_attempt $qa, $preferredbehaviour) {
-        // TODO: see if there's some way or issuing a warning message when
-        // pycode questions aren't being used in an adaptive mode.
-
         if ($preferredbehaviour == 'adaptive') {
             return  new qbehaviour_adaptive_adapted_for_pycode($qa, $preferredbehaviour);
         }
@@ -81,7 +78,7 @@ class qtype_pycode_question extends question_graded_automatically {
         
 
     public function get_expected_data() {
-        return array('answer' => PARAM_RAW);
+        return array('answer' => PARAM_RAW, 'rating' => PARAM_INT);
     }
     
     
@@ -150,6 +147,9 @@ class qtype_pycode_question extends question_graded_automatically {
         }
 
         $dataToCache = array('_testresults' => $testResultsSerial);
+        if ($response['rating'] > 0) {
+            $dataToCache['rating'] = $response['rating'];
+        }
         if ($this->count_errors($testResults) != 0) {
             return array(0, question_state::$gradedwrong, $dataToCache);
         }
@@ -178,9 +178,7 @@ class qtype_pycode_question extends question_graded_automatically {
         }
 
         $testsetjson = json_encode(array($code, $testlist));
-        //debugging(print_r(array($code, $testlist), TRUE));
     	$testsetencoded = base64_encode($testsetjson); 
-        //debugging(strlen($testsetencoded));
         $cmd = "{$GLOBALS['SANDBOX']} \"$testsetencoded\"";
     	$lines = array();
 
@@ -203,7 +201,7 @@ class qtype_pycode_question extends question_graded_automatically {
     	}
     	
     	$testResults = array();
-        // debugging(print_r($lines, TRUE));
+
     	for ($i = 0; $i < count($lines) - 1; $i += 2) {
             $outcome = $lines[$i];
             $output = decodeHex($lines[$i + 1]);
@@ -217,7 +215,7 @@ class qtype_pycode_question extends question_graded_automatically {
             $testresult->mark = $testresult->outcome == 'Yes' ? 1.0 : 0.0;
             $testResults[] = $testresult;
     	}
-        //debugging(print_r($testResults, TRUE));
+
     	return $testResults;
     }
     
