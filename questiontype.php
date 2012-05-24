@@ -227,7 +227,7 @@ class qtype_pycode extends question_type {
                 )",
             array($question_id));
   
-        $num_attempts = count($attempts);
+        $num_attempts = 0;
         $num_successes = 0;
         $counts = array(0, 0, 0, 0);
         $num_steps = 0;
@@ -237,7 +237,10 @@ class qtype_pycode extends question_type {
             if ($attempt->fraction > 0.0) {
                 $num_successes++;
             }
-            $num_steps += $attempt->sequencenumber;
+            if ($attempt->sequencenumber > 0) {
+                $num_attempts++;
+                $num_steps += $attempt->sequencenumber;
+            }
         }
         
         $success_percent = $num_attempts == 0 ? 0 : intval(100.0 * $num_successes / $num_attempts);
