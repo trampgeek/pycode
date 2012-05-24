@@ -90,10 +90,19 @@ class qtype_pycode_renderer extends qtype_renderer {
                 $currentrating);
         $stats = $question->stats;
         $retries = sprintf("%.1f", $stats->average_retries);
-        $stats_text = "Stats: {$stats->attempts} attempts " .
-                "({$stats->success_percent}% successful)." . 
-                " Average submissions per attempt: {$stats->average_retries}. " .
-                "Likes: {$stats->likes}. Neutrals: {$stats->neutrals}. Dislikes: {$stats->dislikes}.";
+        $stats_text = "Statistics: {$stats->attempts} attempts";
+        if ($stats->attempts) {
+            $stats_text .=
+                " ({$stats->success_percent}% successful)." . 
+                " Average submissions per attempt: {$stats->average_retries}.";
+            if ($stats->likes + $stats->neutrals + $stats->dislikes > 0) {
+                $stats_text .=
+                " Likes: {$stats->likes}. Neutrals: {$stats->neutrals}. Dislikes: {$stats->dislikes}.";
+            }
+        }
+        else {
+            $stats_text .= '.';
+        }
         $qtext .= html_writer::tag('p', $stats_text);
         $qtext .= html_writer::tag('p', 'My rating of this question (optional): ' . $ratingSelector);
         return $qtext;
