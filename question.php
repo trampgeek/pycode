@@ -148,7 +148,7 @@ class qtype_pycode_question extends question_graded_automatically {
 
         $dataToCache = array('_testresults' => $testResultsSerial);
         if ($response['rating'] > 0) {
-            $dataToCache['rating'] = $response['rating'];
+            $dataToCache['_rating'] = $response['rating'];
         }
         if ($this->count_errors($testResults) != 0) {
             return array(0, question_state::$gradedwrong, $dataToCache);
