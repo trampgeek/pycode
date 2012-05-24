@@ -166,15 +166,20 @@ class qtype_pycode extends question_type {
     // into the 'question' (which is actually a pycode question edit form).
     public function get_question_options(&$question) {
         global $CFG, $DB, $OUTPUT;
+        
+        $qid = $question->id;
 
         if (!$question->testcases = $DB->get_records_sql("
                     SELECT * 
                     FROM {question_pycode_testcases}
-                    WHERE questionid = ?", array($question->id))) {
+                    WHERE questionid = ?", array($qid))) {
 
-            echo $OUTPUT->notification("Failed to load testcases from the table question_pycode_testcases for question id {$question->id}");
+            echo $OUTPUT->notification("Failed to load testcases from the table question_pycode_testcases for question id {$id}");
             return false;
         }
+        
+
+        $question->stats = $this->get_question_stats($qid);
 
         return true;
     }
@@ -186,6 +191,7 @@ class qtype_pycode extends question_type {
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
         $question->testcases = $questiondata->testcases;
+        $question->stats = $questiondata->stats;  // Same for stats
     }
 
     
@@ -194,6 +200,57 @@ class qtype_pycode extends question_type {
         global $DB;
         $success = $DB->delete_records('question_pycode_testcases', array('questionid' => $questionid));
         return $success && parent::delete_question($questionid, $contextid);
+    }
+    
+    
+    // Query the database to get the statistics of attempts and ratings for
+    // a given question.
+    private function get_question_stats($question_id) {
+        global $DB;
+        $attempts = $DB->get_records_sql("
+            SELECT questionattemptid, fraction, rating, sequencenumber
+            FROM mdl_question_attempts as qa,
+                        mdl_question_attempt_steps as qas
+            LEFT JOIN 
+                ( SELECT value as rating, attemptstepid
+                  FROM  mdl_question_attempt_step_data
+                  WHERE name = 'rating'
+                ) as qasd
+            ON qasd.attemptstepid = qas.id
+            WHERE questionattemptid = qa.id
+
+            AND questionid = ?
+            AND qas.sequencenumber =
+                ( SELECT max(mdl_question_attempt_steps.sequencenumber)
+                  FROM mdl_question_attempt_steps
+                  WHERE mdl_question_attempt_steps.questionattemptid = qa.id
+                )",
+            array($question_id));
+  
+        $num_attempts = count($attempts);
+        $num_successes = 0;
+        $counts = array(0, 0, 0, 0);
+        $num_steps = 0;
+        foreach ($attempts as $attempt) {
+            $rating = isset($attempt->rating) ? $attempt->rating : 0;
+            $counts[$rating]++;  
+            if ($attempt->fraction > 0.0) {
+                $num_successes++;
+            }
+            $num_steps += $attempt->sequencenumber;
+        }
+        
+        $success_percent = $num_attempts == 0 ? 0 : intval(100.0 * $num_successes / $num_attempts);
+        $average_retries = $num_attempts == 0 ? 0 : $num_steps / $num_attempts;
+        $stats = (object) array(
+            'question_id' => $question_id,
+            'attempts' => $num_attempts,
+            'success_percent' => $success_percent,
+            'average_retries' => $average_retries,
+            'likes' => $counts[1],
+            'neutrals' => $counts[2],
+            'dislikes' => $counts[3]);
+        return $stats;
     }
 
 

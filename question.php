@@ -109,7 +109,9 @@ class qtype_pycode_question extends question_graded_automatically {
     
     public function is_same_response(array $prevresponse, array $newresponse) {
         if (!question_utils::arrays_same_at_key_missing_is_blank(
-                $prevresponse, $newresponse, 'answer')) {
+                $prevresponse, $newresponse, 'answer')
+            || !question_utils::arrays_same_at_key_integer(
+                $prevresponse, $newresponse, 'rating')) {
             return false;
         }
         return true;
@@ -147,9 +149,7 @@ class qtype_pycode_question extends question_graded_automatically {
         }
 
         $dataToCache = array('_testresults' => $testResultsSerial);
-        if ($response['rating'] > 0) {
-            $dataToCache['_rating'] = $response['rating'];
-        }
+
         if ($this->count_errors($testResults) != 0) {
             return array(0, question_state::$gradedwrong, $dataToCache);
         }

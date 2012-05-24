@@ -82,10 +82,19 @@ class qtype_pycode_renderer extends qtype_renderer {
         }
 
         $currentanswer = $qa->get_last_qt_var('answer');
+        $currentrating = $qa->get_last_qt_var('rating', 0);
         $qtext .= html_writer::tag('textarea', s($currentanswer), $ta_attributes);
         $ratingSelector = html_writer::select(
-                array(1=>'Dislike', 2=>'Neutral', 3=>'Like'),
-                $qa->get_qt_field_name('rating'));
+                array(1=>'Like', 2=>'Neutral', 3=>'Dislike'),
+                $qa->get_qt_field_name('rating'),
+                $currentrating);
+        $stats = $question->stats;
+        $retries = sprintf("%.1f", $stats->average_retries);
+        $stats_text = "Stats: {$stats->attempts} attempts " .
+                "({$stats->success_percent}% successful)." . 
+                " Average submissions per attempt: {$stats->average_retries}. " .
+                "Likes: {$stats->likes}. Neutrals: {$stats->neutrals}. Dislikes: {$stats->dislikes}.";
+        $qtext .= html_writer::tag('p', $stats_text);
         $qtext .= html_writer::tag('p', 'My rating of this question (optional): ' . $ratingSelector);
         return $qtext;
 
@@ -116,7 +125,6 @@ class qtype_pycode_renderer extends qtype_renderer {
 
             $fb = html_writer::start_tag('div', array('class' => $resultsclass));
             $fb .= html_writer::tag('p', '&nbsp;', array('class' => 'pycode-spacer'));
-            // debugging(print_r($testCases, TRUE));
             $fb .= $this->buildResultsTable($testCases, $testResults);
 
             // Summarise the status of the response in a paragraph at the end.
