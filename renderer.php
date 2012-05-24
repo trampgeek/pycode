@@ -84,7 +84,7 @@ class qtype_pycode_renderer extends qtype_renderer {
         $currentanswer = $qa->get_last_qt_var('answer');
         $qtext .= html_writer::tag('textarea', s($currentanswer), $ta_attributes);
         $ratingSelector = html_writer::select(
-                array(1=>'Dislike', 2=>'Ho hum', 3=>'Like'),
+                array(1=>'Dislike', 2=>'Neutral', 3=>'Like'),
                 $qa->get_qt_field_name('rating'));
         $qtext .= html_writer::tag('p', 'My rating of this question (optional): ' . $ratingSelector);
         return $qtext;
