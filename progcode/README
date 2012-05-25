@@ -1,0 +1,5 @@
+progcode is the superclass of pycode and ccode question types.
+The Moodle question type architecture doesn't support the idea of an
+abstract question type, so the abstract base class has to be stuck into
+on of its subclasses. Not very elegant, but that's the way it has to be,
+apparently.
