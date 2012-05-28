@@ -89,14 +89,9 @@ class qtype_pycode_question_test extends UnitTestCase {
         $this->assertEqual($result[1], question_state::$gradedright);
         $this->assertTrue(isset($result[2]['_testresults']));
         $testResults = unserialize($result[2]['_testresults']);
-        $n = count($testResults);
-        $i = 0;
+
         foreach ($testResults as $tr) {
-            $i++;
-            $this->assertEqual($tr->outcome, 'Yes');
-            $this->assertEqual(trim($tr->expected), trim($tr->output));
-            $this->assertEqual($tr->mark, 1);
-            $this->assertEqual($tr->hidden, $i == $n ? 1 : 0); // last one hidden
+            $this->assertTrue($tr->isCorrect);
         }
     }
     
@@ -122,7 +117,7 @@ class qtype_pycode_question_test extends UnitTestCase {
         $this->assertTrue(isset($result[2]['_testresults']));
         $testResults = unserialize($result[2]['_testresults']);
         $this->assertEqual(count($testResults), 1);
-        $this->assertEqual($testResults[0]->outcome, 'Syntax Error');
+        $this->assertFalse($testResults[0]->isCorrect);
     }
     
     
@@ -136,7 +131,7 @@ class qtype_pycode_question_test extends UnitTestCase {
         $this->assertTrue(isset($result[2]['_testresults']));
         $testResults = unserialize($result[2]['_testresults']);
         $this->assertEqual(count($testResults), 1);
-        $this->assertEqual($testResults[0]->outcome, 'Runtime Error');
+        $this->assertFalse($testResults[0]->isCorrect);
     }  
 
     
@@ -150,7 +145,7 @@ class qtype_pycode_question_test extends UnitTestCase {
         $this->assertTrue(isset($result[2]['_testresults']));
         $testResults = unserialize($result[2]['_testresults']);
         $this->assertEqual(count($testResults), 3);
-        $this->assertEqual($testResults[2]->outcome, 'Runtime Error');
+        $this->assertFalse($testResults[2]->isCorrect);
     }  
     
     
@@ -172,10 +167,7 @@ EOCODE;
         $i = 0;
         foreach ($testResults as $tr) {
             $i++;
-            $this->assertEqual($tr->outcome, 'Yes');
-            $this->assertEqual(trim($tr->expected), trim($tr->output));
-            $this->assertEqual($tr->mark, 1);
-            $this->assertEqual($tr->hidden, $i == $n ? 1 : 0); // last one hidden
+            $this->assertTrue($tr->isCorrect);
         }
     }
     
@@ -210,10 +202,10 @@ EOCODE;
         $this->assertTrue(isset($result[2]['_testresults']));
         $testResults = unserialize($result[2]['_testresults']);
         $this->assertEqual(count($testResults), 4);
-        $this->assertEqual($testResults[0]->outcome, 'Yes');
-        $this->assertEqual($testResults[1]->outcome, 'Yes');
-        $this->assertEqual($testResults[2]->outcome, 'Yes');
-        $this->assertEqual($testResults[3]->outcome, 'Runtime Error');
+        $this->assertTrue($testResults[0]->isCorrect);
+        $this->assertTrue($testResults[1]->isCorrect);
+        $this->assertTrue($testResults[2]->isCorrect);
+        $this->assertFalse($testResults[3]->isCorrect);
      }
      
      public function test_timeout() {
@@ -227,7 +219,7 @@ EOCODE;
         $this->assertTrue(isset($result[2]['_testresults']));
         $testResults = unserialize($result[2]['_testresults']);
         $this->assertEqual(count($testResults), 1);
-        $this->assertEqual($testResults[0]->outcome, 'Runtime Error');
+        $this->assertFalse($testResults[0]->isCorrect);
         $this->assertEqual($testResults[0]->output, 'SIGTERM (timeout or too much memory?)');
      } 
      

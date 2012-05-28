@@ -39,7 +39,8 @@ class qtype_pycode_question extends qtype_progcode_question {
 
     // Check the correctness of a student's Python code given the
     // response and and a set of testCases.
-    // Return value is an array of test-result objects.
+    // Return value is an array of test-result objects, each have just an
+    // isCorrect field and an output field (the actual output).
     // If an error occurs, all further tests are aborted so the returned array may be shorter
     // than the input array
     protected function run_tests($code, $testcases) {
@@ -53,7 +54,6 @@ class qtype_pycode_question extends qtype_progcode_question {
             else {
                 $testlist[] = array($testcase->testcode, $testcase->output);
             }
-            $hidden[] = $testcase->hidden;  // Store for easy access ($testcases is indexed by id not 0...n)
         }
 
         $testsetjson = json_encode(array($code, $testlist));
@@ -85,31 +85,14 @@ class qtype_pycode_question extends qtype_progcode_question {
             $outcome = $lines[$i];
             $output = decodeHex($lines[$i + 1]);
             $testresult = new stdClass;
-            $testresult->outcome = $lines[$i];
-            $test = $testlist[$i / 2];
-            $testresult->testcode = $test[0];
-            $testresult->expected = $test[count($test) - 1];
+            $testresult->isCorrect = $lines[$i] == 'Yes';
             $testresult->output = $output;
-            $testresult->hidden = $hidden[$i / 2];
-            $testresult->mark = $testresult->outcome == 'Yes' ? 1.0 : 0.0;
             $testResults[] = $testresult;
     	}
 
     	return $testResults;
     }
     
-    
-    // Count the number of errors in the given array of test results.
-    // If $hiddenonly is true, count only the errors in the hidden tests
-    protected function count_errors($testResults, $hiddenonly = False) {
-    	$cnt = 0;
-    	foreach ($testResults as $test) {
-            if ($test->outcome != 'Yes' && (!$hiddenonly || $test->hidden)) {
-                $cnt++;
-            }
-    	}
-    	return $cnt;
-    }
 }
 
 // *** Utility functions ***

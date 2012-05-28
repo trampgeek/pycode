@@ -16,25 +16,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Multiple choice question renderer classes.
- *
- * @package    qtype
- * @subpackage pycode
- * @copyright  2009 The Open University
+ * @package    moodlecore
+ * @subpackage backup-moodle2
+ * @copyright  &copy; 2010 Richard Lobb
+ * @author     Richard Lobb richard.lobb@canterbury.ac.nz
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/question/type/pycode/progcode/renderer.php');
+require_once($CFG->dirroot . '/question/type/pycode/progcode/backup/moodle2/backup_qtype_progcode_plugin.class.php');
 
+// TODO: test Version 2.1 backup/restore
 
 /**
- * Subclass for generating the bits of output specific to pycode questions.
- *
- * @copyright  Richard Lobb, University of Canterbury.
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Provides the information to backup pycode questions
  */
-class qtype_pycode_renderer extends qtype_progcode_renderer {
-
-
+class backup_qtype_pycode_plugin extends backup_qtype_progcode_plugin {
+    protected function qtype() {
+        return 'pycode';
+    }
 }

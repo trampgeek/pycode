@@ -135,7 +135,6 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
 
             $fb = html_writer::start_tag('div', array('class' => $resultsclass));
             $fb .= html_writer::tag('p', '&nbsp;', array('class' => 'progcode-spacer'));
-            // debugging(print_r($testCases, TRUE));
             $fb .= $this->buildResultsTable($testCases, $testResults);
 
             // Summarise the status of the response in a paragraph at the end.
@@ -143,7 +142,7 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
             $fb .= $this->buildFeedback($testCases, $testResults);
             $fb .= html_writer::end_tag('div');
         } else { // No testresults?! Probably due to a wrong behaviour selected
-            $text = get_string('qWrongBehaviour', 'qtype_progcode');
+            $text = get_string('qWrongBehaviour', 'qtype_pycode');
             $fb = html_writer::start_tag('div', array('class' => 'missingResults'));
             $fb .= html_writer::tag('p', $text);
             $fb .= html_writer::end_tag('div');
@@ -172,21 +171,19 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         $testCaseKeys = array_keys($testCases);  // Arbitrary numeric indices. Aarghhh.
         $i = 0;
         foreach ($testResults as $testResult) {
-            if (!$testResult->hidden) {
+            $testCase = $testCases[$testCaseKeys[$i]];
+            if (!$testCase->hidden) {
                 $tableRow = array();
                 $result = $testResult->output;
                 if ($numTests) {
-                    // Ensure backward compatibility with old cached test results
-                    // TODO -- remove this in due course.
-                    $testcode = isset($testResult->testcode) ? 
-                        $testResult->testcode : $testResult->shellinput;
+                    $testcode = $testCase->testcode;
                     $tableRow[] = s($testcode);
                 }
                 if ($numStdins) {
-                    $tableRow[] = s($testCases[$testCaseKeys[$i]]->stdin);
+                    $tableRow[] = s($testCase->stdin);
                 }
                 $tableRow = array_merge($tableRow, array(
-                    s($testResult->expected),
+                    s($testCase->output),
                     s($result)
                 ));
 
@@ -194,7 +191,8 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
                 foreach ($tableRow as $col) {
                     $rowWithLineBreaks[] = $this->addLineBreaks($col);
                 }
-                $rowWithLineBreaks[] = $this->feedback_image($testResult->mark);
+                $mark = $testResult->isCorrect ? 1.0 : 0.0;
+                $rowWithLineBreaks[] = $this->feedback_image($mark);
                 $tableData[] = $rowWithLineBreaks;
             }
             $i++;
@@ -208,16 +206,16 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
     private function buildFeedback($testCases, $testResults) {
         $lines = array();  // Build a list of lines of output
         if (count($testResults) != count($testCases)) {
-            $lines[] = get_string('aborted', 'qtype_progcode');
-            $lines[] = get_string('noerrorsallowed', 'qtype_progcode');
+            $lines[] = get_string('aborted', 'qtype_pycode');
+            $lines[] = get_string('noerrorsallowed', 'qtype_pycode');
         } else {
             $numErrors = $this->count_errors($testResults);
             if ($numErrors > 0) {
-                if ($numErrors == $this->count_errors($testResults, True)) {
+                if ($numErrors == $this->count_hidden_errors($testResults, $testCases)) {
                     // Only hidden tests were failed
-                    $lines[] = get_string('failedhidden', 'qtype_progcode');
+                    $lines[] = get_string('failedhidden', 'qtype_pycode');
                 }
-                $lines[] = get_string('noerrorsallowed', 'qtype_progcode');
+                $lines[] = get_string('noerrorsallowed', 'qtype_pycode');
             } else {
                 $lines[] = get_string('allok', 'qtype_pycode') .
                         "&nbsp;" . $this->feedback_image(1.0);
@@ -230,7 +228,7 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         $para = html_writer::start_tag('p');
         $para .= $lines[0];
         for ($i = 1; $i < count($lines); $i++) {
-            $para .= html_writer::empty_tag('br') . $lines[$i];
+            $para .= html_writer::empty_tag('br') . $lines[$i];;
         }
         $para .= html_writer::end_tag('p');
         return $para;
@@ -330,8 +328,31 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
     }
 
     // Count the number of errors in the given array of test results.
-    // If $hidden_only is true, count only the errors in the hidden tests
-    // Subclass must implement this.
-    abstract protected function count_errors($testResults, $hiddenonly = False);
+    private function count_errors($testResults) {
+        $errors = 0;
+        foreach ($testResults as $tr) {
+            if (!$tr->isCorrect) {
+                $errors++;
+            }
+        }
+        return $errors;
+    }
+    
+    // Count the number of errors in hidden questions, given the arrays of
+    // testcases and testresults. A slight complication here is that the testcase keys
+    // are arbitrary integers.
+    private function count_hidden_errors($testResults, $testCases) {
+        $testCaseKeys = array_keys($testCases);  // Arbitrary numeric indices. Aarghhh.
+        $i = 0;
+        $count = 0;
+        foreach ($testResults as $tr) {
+            $testCase = $testCases[$testCaseKeys[$i]];
+            if ($testCase->hidden && !$tr->isCorrect) {
+                $count++;
+            }
+            $i++;
+        }
+        return $count;
+    }
     
 }

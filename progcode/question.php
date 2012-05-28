@@ -59,7 +59,7 @@ require_once($CFG->dirroot . '/local/onlinejudge/judgelib.php');
 /**
  * Represents a ProgramCode 'progcode' question.
  */
-class qtype_progcode_question extends question_graded_automatically {
+abstract class qtype_progcode_question extends question_graded_automatically {
     
     public $testcases;    // Array of testcases
     
@@ -171,17 +171,21 @@ class qtype_progcode_question extends question_graded_automatically {
     // Return value is an array of test-result objects.
     // If an error occurs, all further tests are aborted so the returned array may be shorter
     // than the input array
-    protected function run_tests($code, $testcases) {
-        throw new coding_exception('Unexpected call to run_tests. Subclass expected to handle this.');
-    	return array();
-    }
+    abstract protected function run_tests($code, $testcases);
     
     
     // Count the number of errors in the given array of test results.
-    // If $hiddenonly is true, count only the errors in the hidden tests
-    protected function count_errors($testResults, $hiddenonly = False) {
-        throw new coding_exception('Unexpected call to count_errors. Subclass expected to handle this.');
-    	return 0;
+    // TODO -- figure out how to eliminate either this one or the identical
+    // version in renderer.php.
+    private function count_errors($testResults) {
+        $errors = 0;
+        foreach ($testResults as $tr) {
+            if (!$tr->isCorrect) {
+                $errors++;
+            }
+        }
+        return $errors;
     }
+        
 }
 
