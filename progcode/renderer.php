@@ -94,9 +94,9 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         if ($stats->attempts) {
             $stats_text .=
                 " ({$stats->success_percent}% successful)." . 
-                " Average submissions per attempt: {$stats->average_retries}.";
+                " Average submissions per attempt: {$retries}.";
             if ($stats->likes + $stats->neutrals + $stats->dislikes > 0) {
-                $stats_text .=
+                $stats_text .= "<br />" .
                 " Likes: {$stats->likes}. Neutrals: {$stats->neutrals}. Dislikes: {$stats->dislikes}.";
             }
         }

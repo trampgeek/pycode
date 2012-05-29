@@ -43,7 +43,7 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
     var $_editor_options_generalfb;           //in dependence of editor type set a different array for its options
 
     
-    function definition_inner(&$mform) {
+    public function definition_inner(&$mform) {
         // TODO: do I need the next 2 lines?
         $mform->addElement('static', 'answersinstruct');
         $mform->closeHeaderBefore('answersinstruct');
@@ -63,7 +63,7 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
      *  Overridden so each 'answer' is a test case containing a ProgramCode testcode to be evaluated
      * and a ProgramCode expected output value.
      */
-    function get_per_answer_fields(&$mform, $label, $gradeoptions, &$repeatedoptions, &$answersoption) {
+    public function get_per_answer_fields(&$mform, $label, $gradeoptions, &$repeatedoptions, &$answersoption) {
         $repeated = array();
         $repeated[] = & $mform->createElement('header', 'answerhdr', $label);
         $repeated[] = & $mform->createElement('textarea', 'testcode',
@@ -90,7 +90,7 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
     
     
 
-    function data_preprocessing($question) {
+    public function data_preprocessing($question) {
         // Although it's not wildly obvious from the documentation, this method
         // needs to set up fields of the current question whose names match those
         // specified in get_per_answer_fields. These are used to load the
@@ -112,7 +112,7 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
     }
 
     
-    function validation($data, $files) {
+    public function validation($data, $files) {
 
         $errors = parent::validation($data, $files);
         $testcodes = $data['testcode'];
@@ -134,8 +134,5 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
         }
         return $errors;
     }
-
-    
-    abstract function qtype();
 
 }

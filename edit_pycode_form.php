@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
  * @license 	http://www.gnu.org/copyleft/gpl.html GNU Public License
  */
 
-require_once($CFG->dirroot . '/question/type/pycode/progcode/qtype_progcode_edit_form.php');
+require_once($CFG->dirroot . '/question/type/pycode/progcode/edit_progcode_form.php');
 
 /**
  * pycode editing form definition.

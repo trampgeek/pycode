@@ -27,6 +27,8 @@ $string['pycode'] = 'Python code';
 $string['pycodesummary'] = 'Answer is Python code that is executed in the context of a set of test cases to determine its correctness.';
 $string['pycode_help'] = 'In response to a question, which is a specification for a Python function or program, the respondent enters Python source code that satisfies the specification.';
 $string['pycode_link'] = 'question/type/pycode';
+$string['editingpycode'] = 'Editing a Python Code Question';
+$string['addingpycode'] = 'Adding a new Python Code Question';
 $string['xmlpycodeformaterror'] = 'XML format error in pycode question';
 
 // The rest of the strings belong to progcode, but because it's not a component
