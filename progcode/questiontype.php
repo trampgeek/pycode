@@ -152,9 +152,10 @@ class qtype_progcode extends question_type {
     }
 
     // Load the question options (namely testcases) from the database
-    // into the 'question' (which is actually a progcode question edit form).
+    // into the 'question' (which is actually a pycode/ccode/etc question edit form).
     public function get_question_options(&$question) {
         global $CFG, $DB, $OUTPUT;
+        
         $q_type = $this->name();
         $table_name = "question_" . $this->name() . "_testcases";
         
@@ -173,7 +174,7 @@ class qtype_progcode extends question_type {
     }
     
     
-    // The 'questiondata' here is actually (something like) a progcode question
+    // The 'questiondata' here is actually (something like) a pycode/ccode/etc question
     // edit form, and we need to extend the baseclass method to copy the
     // testcases and stats across to the under-creation question definition.
     protected function initialise_question_instance(question_definition $question, $questiondata) {

@@ -26,6 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 define('FORCE_TABULAR_EXAMPLES', TRUE);
+define('SHOW_STATISTICS', TRUE);  // If TRUE, shows stats on all progcode-type questions
 
 /**
  * Subclass for generating the bits of output specific to progcode questions.
@@ -84,28 +85,31 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         $currentanswer = $qa->get_last_qt_var('answer');
         $currentrating = $qa->get_last_qt_var('rating', 0);
         $qtext .= html_writer::tag('textarea', s($currentanswer), $ta_attributes);
+        
+        if (SHOW_STATISTICS) {
+            $stats = $question->stats;
+            $retries = sprintf("%.1f", $stats->average_retries);
+            $stats_text = "Statistics: {$stats->attempts} attempts";
+            if ($stats->attempts) {
+                $stats_text .=
+                    " ({$stats->success_percent}% successful)." . 
+                    " Average submissions per attempt: {$retries}.";
+                if ($stats->likes + $stats->neutrals + $stats->dislikes > 0) {
+                    $stats_text .= "<br />" .
+                    " Likes: {$stats->likes}. Neutrals: {$stats->neutrals}. Dislikes: {$stats->dislikes}.";
+                }
+            }
+            else {
+                $stats_text .= '.';
+            }
+            $qtext .= html_writer::tag('p', $stats_text);   
+        }
+        
         $ratingSelector = html_writer::select(
                 array(1=>'Like', 2=>'Neutral', 3=>'Dislike'),
                 $qa->get_qt_field_name('rating'),
-                $currentrating);
-        $stats = $question->stats;
-        $retries = sprintf("%.1f", $stats->average_retries);
-        $stats_text = "Statistics: {$stats->attempts} attempts";
-        if ($stats->attempts) {
-            $stats_text .=
-                " ({$stats->success_percent}% successful)." . 
-                " Average submissions per attempt: {$retries}.";
-            if ($stats->likes + $stats->neutrals + $stats->dislikes > 0) {
-                $stats_text .= "<br />" .
-                " Likes: {$stats->likes}. Neutrals: {$stats->neutrals}. Dislikes: {$stats->dislikes}.";
-            }
-        }
-        else {
-            $stats_text .= '.';
-        }
-        $qtext .= html_writer::tag('p', $stats_text);
+                $currentrating);        
         $qtext .= html_writer::tag('p', 'My rating of this question (optional): ' . $ratingSelector);
-
         return $qtext;
 
         // TODO: consider how to prevent multiple submits while one submit in progress

@@ -44,9 +44,11 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
 
     
     public function definition_inner(&$mform) {
-        // TODO: do I need the next 2 lines?
-        $mform->addElement('static', 'answersinstruct');
-        $mform->closeHeaderBefore('answersinstruct');
+        
+        // TODO: what was the purpose of the next 2 lines?
+        //$mform->addElement('static', 'answersinstruct');
+        //$mform->closeHeaderBefore('answersinstruct');
+        
         $gradeoptions = array(); // Unused
         if (isset($this->question->testcases)) {
             $numTestcases = count($this->question->testcases) + NUM_TESTCASES_ADD;
@@ -54,6 +56,7 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
         else {
             $numTestcases = NUM_TESTCASES_START;
         }
+        
         $this->add_per_answer_fields($mform, get_string('testcase', 'qtype_pycode'), $gradeoptions, $numTestcases);
         $this->add_interactive_settings();
     }
@@ -119,9 +122,13 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
         $stdins = $data['stdin'];
         $outputs = $data['output'];
         $count = 0;
+        $cntNonemptyTests = 0;
         $num = max(count($testcodes), count($stdins), count($outputs));
         for ($i = 0; $i < $num; $i++) {
             $testcode = trim($testcodes[$i]);
+            if ($testcode != '') {
+                $cntNonemptyTests++;
+            }
             $stdin = trim($stdins[$i]);
             $output = trim($outputs[$i]);
             if ($testcode !== '' || $stdin != '' || $output !== '') {
@@ -131,6 +138,9 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
         
         if ($count == 0) {
             $errors["testcode[0]"] = get_string('atleastonetest', 'qtype_pycode');
+        }
+        else if ($cntNonemptyTests != 0 && $cntNonemptyTests != count($outputs)) {
+            $errors["testcode[0]"] = get_string('allornothing', 'qtype_pycode');
         }
         return $errors;
     }

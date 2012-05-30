@@ -39,6 +39,7 @@ $string['xmlpycodeformaterror'] = 'XML format error in pycode question';
 $string['aborted'] = 'Testing was aborted due to error.';
 $string['allok'] = 'Passed all tests! ';
 $string['atleastonetest'] = 'You must provide at least one test case for this question.';
+$string['allornothing'] = 'Test code must be provided either for all testcases or for none.';
 $string['testcode'] = 'Test code';
 $string['stdin'] = 'Standard Input (only for programs that explicitly read stdin)';
 $string['failedhidden'] = 'Your code failed one or more hidden tests.';
