@@ -288,7 +288,7 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         if ($numShell) {
             $table->head[] = 'Test';
         }
-        $table->head[] = $numStd && $numShell ? 'Total output' : 'Output';
+        $table->head[] = 'Output';
         
         $tableRows = array();
         foreach ($examples as $example) {
