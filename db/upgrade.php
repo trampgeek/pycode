@@ -1,6 +1,4 @@
 <?php
- 
-define('MODIFY_ONE_LINE_QUESTIONS', FALSE);
 
 function xmldb_qtype_pycode_upgrade($oldversion) {
     global $CFG, $DB;
