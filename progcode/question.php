@@ -54,7 +54,6 @@ require_once($CFG->dirroot . '/question/behaviour/adaptive_adapted_for_progcode/
  * to provide the judge class and the sandboxing (thought the latter
  * is a separate project -- see http://sourceforge.net/projects/libsandbox/).
  */
-require_once($CFG->dirroot . '/local/onlinejudge/judgelib.php');
 
 /**
  * Represents a ProgramCode 'progcode' question.
