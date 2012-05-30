@@ -139,7 +139,7 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
         if ($count == 0) {
             $errors["testcode[0]"] = get_string('atleastonetest', 'qtype_pycode');
         }
-        else if ($cntNonemptyTests != 0 && $cntNonemptyTests != count($outputs)) {
+        else if ($cntNonemptyTests != 0 && $cntNonemptyTests != $count) {
             $errors["testcode[0]"] = get_string('allornothing', 'qtype_pycode');
         }
         return $errors;
