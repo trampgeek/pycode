@@ -283,7 +283,7 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         list($numStd, $numShell) = $this->countBits($examples);
         $table->head = array();
         if ($numStd) {
-            $table->head[] = 'Standard Input';
+            $table->head[] = 'Input';
         }
         if ($numShell) {
             $table->head[] = 'Test';
