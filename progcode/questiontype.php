@@ -187,7 +187,9 @@ class qtype_progcode extends question_type {
     // Delete the testcases when this question is deleted.
     public function delete_question($questionid, $contextid) {
         global $DB;
-        $success = $DB->delete_records('question_progcode_testcases', array('questionid' => $questionid));
+        $q_type = $this->name();
+        $table_name = "question_{$q_type}_testcases";
+        $success = $DB->delete_records($table_name, array('questionid' => $questionid));
         return $success && parent::delete_question($questionid, $contextid);
     }
 
