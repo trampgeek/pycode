@@ -49,5 +49,6 @@ $string['missingoutput'] = 'You must supply the expected output from this test c
 $string['noerrorsallowed'] = 'Your code must pass all tests to earn any marks. Try again.';
 $string['qWrongBehaviour'] = 'Detailed test results unavailable. Perhaps question not using Adaptive Mode?';
 $string['output'] = 'Output';
+$string['pycode'] = 'Python Code';
 $string['testcase'] = 'Test case.';
 $string['useasexample'] = 'Use as example';
