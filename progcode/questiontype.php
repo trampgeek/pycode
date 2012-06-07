@@ -283,9 +283,9 @@ class qtype_progcode extends question_type {
 
         foreach ($testcases as $testcase) {
             $tc = new stdClass;
-            $tc->testcode = trim($testcase['#']['testcode'][0]['#']['text'][0]['#']);
-            $tc->stdin = $testcase['#']['stdin'] == "1" ? 1 : 0;
-            $tc->output = trim($testcase['#']['output'][0]['#']['text'][0]['#']);
+            $tc->testcode = $testcase['#']['testcode'][0]['#']['text'][0]['#'];
+            $tc->stdin = $testcase['#']['stdin'][0]['#']['text'][0]['#'];
+            $tc->output = $testcase['#']['output'][0]['#']['text'][0]['#'];
             $tc->hidden = $testcase['@']['hidden'] == "1" ? 1 : 0;
             $tc->useasexample = $testcase['@']['useasexample'] == "1" ? 1 : 0;
             $qo->testcases[] = $tc;
@@ -311,13 +311,13 @@ class qtype_progcode extends question_type {
             $hidden = $testcase->hidden ? 1 : 0;
             $expout .= "      <testcase useasexample=\"$useasexample\" hidden=\"$hidden\">\n";
             $expout .= "        <testcode>\n";
-            $expout .= $format->writetext($testcase->testcode, 4, false);
+            $expout .= $format->writetext($testcase->testcode, 4);
             $expout .= "        </testcode>\n";
             $expout .= "        <stdin>\n";
-            $expout .= $format->writetext($testcase->stdin, 4, false);
+            $expout .= $format->writetext($testcase->stdin, 4);
             $expout .= "        </stdin>\n";            
             $expout .= "        <output>\n";
-            $expout .= $format->writetext($testcase->output, 4, false);
+            $expout .= $format->writetext($testcase->output, 4);
             $expout .= "        </output>\n";
             $expout .= "    </testcase>\n";
         }
