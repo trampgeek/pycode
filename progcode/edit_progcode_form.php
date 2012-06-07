@@ -116,7 +116,6 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
 
     
     public function validation($data, $files) {
-
         $errors = parent::validation($data, $files);
         $testcodes = $data['testcode'];
         $stdins = $data['stdin'];

@@ -40,9 +40,11 @@ Unfortunately, this has to be built from source. The steps are:
 
 B. Install the new moodle quiz question behaviour.
     A special Moodle quiz question behaviour is required for pycode, called
-    adaptive_adapted_for_pycode. It's available as a GIT repo. Install it by:
-    git clone https://github.com/trampgeek/adaptive_adapted_for_pycode
-    sudo mv adaptive_adapted_for_pycode/ <moodle_base>/question/behaviour/
+    adaptive_adapted_for_pycode. [It's adapted for progcode rather than 
+    pycode to accommodate other subclasses of progcode, such as ccode].
+    It's available as a GIT repo. Install it by:
+    git clone https://github.com/trampgeek/adaptive_adapted_for_progcode
+    sudo mv adaptive_adapted_for_progcode/ <moodle_base>/question/behaviour/
 
 C. Install the pycode quiz question
     The Moodle question plugin itself can now be installed by:

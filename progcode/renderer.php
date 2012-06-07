@@ -278,6 +278,9 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
     
     
     private function formatExamplesAsTable($examples) {
+        // TODO: consider if ccode version should use column headers of
+        // "Standard input" and "Standard output" rather than just Input
+        // and output.
         $table = new html_table();
         $table->attributes['class'] = 'progcodeexamples';
         list($numStd, $numShell) = $this->countBits($examples);
