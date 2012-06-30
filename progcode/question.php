@@ -95,11 +95,15 @@ abstract class qtype_progcode_question extends question_graded_automatically {
             return null;
         }
     }
-
+    
+    public function is_gradable_response(array $response) {
+        global $FUNC_MIN_LENGTH;
+        return array_key_exists('answer', $response) &&
+                !empty($response['answer']) && strlen($response['answer']) > $FUNC_MIN_LENGTH;
+    }
     
     public function is_complete_response(array $response) {
-        global $FUNC_MIN_LENGTH;
-        return !empty($response['answer']) && strlen($response['answer']) > $FUNC_MIN_LENGTH;
+        return $this->is_gradable_response($response);
     }
     
     
@@ -109,7 +113,7 @@ abstract class qtype_progcode_question extends question_graded_automatically {
      * @return string the message.
      */
     public function get_validation_error(array $response) {
-        return "Empty or nearly-empty function declaration";
+        return get_string('answerrequired', 'qtype_pycode');
     }
 
     

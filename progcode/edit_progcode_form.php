@@ -79,7 +79,12 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
                 get_string('output', 'qtype_pycode'),
                 array('cols' => 80, 'rows' => 4, 'class' => 'testcaseresult'));
         $repeated[] = & $mform->createElement('checkbox', 'useasexample', get_string('useasexample', 'qtype_pycode'), false);
-        $repeated[] = & $mform->createElement('checkbox', 'hidden', get_string('hidden', 'qtype_pycode'), false);
+        $options = array();
+        foreach ($this->displayOptions() as $opt) {
+            $options[$opt] = get_string($opt, 'qtype_pycode');
+        }
+        $repeated[] = & $mform->createElement('select', 'display', get_string('display', 'qtype_pycode'), $options);
+        $repeated[] = & $mform->createElement('checkbox', 'hiderestiffail', get_string('hiderestiffail', 'qtype_pycode'), false);
         $repeatedoptions['output']['type'] = PARAM_RAW;
         $answersoption = '';  // Not actually using the options field to hold answers
         return $repeated;
@@ -92,6 +97,11 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
     }
     
     
+    // A list of the allowed values of the DB 'display' field for each testcase.
+    protected function displayOptions() {
+        return array('SHOW', 'HIDE', 'HIDE_IF_FAIL', 'HIDE_IF_SUCCEED');
+    }
+    
 
     public function data_preprocessing($question) {
         // Although it's not wildly obvious from the documentation, this method
@@ -102,13 +112,15 @@ abstract class qtype_progcode_edit_form extends question_edit_form {
             $question->testcode = array();
             $question->output = array();
             $question->useasexample = array();
-            $question->hidden = array();
+            $question->display = array();
+            $question->hiderestifail = array();
             foreach ($question->testcases as $tc) {
                 $question->testcode[] = $tc->testcode;
                 $question->stdin[] = $tc->stdin;
                 $question->output[] = $tc->output;
                 $question->useasexample[] = $tc->useasexample;
-                $question->hidden[] = $tc->hidden;
+                $question->display[] = $tc->display;
+                $question->hiderestiffail[] = $tc->hiderestiffail;
             }
         }
         return $question;

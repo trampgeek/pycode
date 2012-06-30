@@ -48,7 +48,7 @@ abstract class backup_qtype_progcode_plugin extends backup_qtype_plugin {
         // Define the elements
         $testcases = new backup_nested_element('testcases');
         $testcase = new backup_nested_element('testcase', array('id'), array(
-            'testcode', 'output', 'useasexample', 'hidden', 'stdin'));
+            'testcode', 'output', 'useasexample', 'display', 'hiderestiffail', 'stdin'));
 
         // Build the tree
         $element->add_child($testcases);

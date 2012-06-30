@@ -103,7 +103,8 @@ class qtype_progcode extends question_type {
             $testcase->stdin = $stdin;
             $testcase->output = $output;
             $testcase->useasexample = isset($question->useasexample[$i]);
-            $testcase->hidden = isset($question->hidden[$i]);
+            $testcase->display = $question->display[$i];
+            $testcase->hiderestiffail = isset($question->hiderestiffail[$i]);
             $testcases[] = $testcase;
         }
 
@@ -286,7 +287,19 @@ class qtype_progcode extends question_type {
             $tc->testcode = $testcase['#']['testcode'][0]['#']['text'][0]['#'];
             $tc->stdin = $testcase['#']['stdin'][0]['#']['text'][0]['#'];
             $tc->output = $testcase['#']['output'][0]['#']['text'][0]['#'];
-            $tc->hidden = $testcase['@']['hidden'] == "1" ? 1 : 0;
+            $tc->display = 'SHOW';
+            if (isset($testcase['@']['hidden']) && $testcase['@']['hidden'] == "1") {
+                $tc->display = 'HIDE';  // Handle old-style export too
+            }
+            if (isset($testcase['#']['display'])) {
+                $tc->display = $testcase['#']['display'][0]['#']['text'][0]['#'];
+            }
+            if (isset($testcase['@']['hiderestiffail'] )) {
+                $tc->hiderestiffail = $testcase['@']['hiderestiffail'] == "1" ? 1 : 0;
+            }
+            else {
+                $tc->hiderestiffail = 0;
+            }
             $tc->useasexample = $testcase['@']['useasexample'] == "1" ? 1 : 0;
             $qo->testcases[] = $tc;
         }
@@ -308,8 +321,8 @@ class qtype_progcode extends question_type {
         $expout = "    <testcases>\n";
         foreach ($question->testcases as $testcase) {
             $useasexample = $testcase->useasexample ? 1 : 0;
-            $hidden = $testcase->hidden ? 1 : 0;
-            $expout .= "      <testcase useasexample=\"$useasexample\" hidden=\"$hidden\">\n";
+            $hiderestiffail = $testcase->hiderestiffail ? 1 : 0;
+            $expout .= "      <testcase useasexample=\"$useasexample\" hiderestiffail=\"$hiderestiffail\">\n";
             $expout .= "        <testcode>\n";
             $expout .= $format->writetext($testcase->testcode, 4);
             $expout .= "        </testcode>\n";
@@ -319,6 +332,8 @@ class qtype_progcode extends question_type {
             $expout .= "        <output>\n";
             $expout .= $format->writetext($testcase->output, 4);
             $expout .= "        </output>\n";
+            $expout .= "        <display>\n";
+            $expout .= $format->writetext($testcase->display, 4);
             $expout .= "    </testcase>\n";
         }
         $expout .= "    </testcases>\n";

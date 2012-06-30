@@ -52,19 +52,29 @@ class qtype_pycode_test_helper extends question_test_helper {
         $pycode->testcases = array(
             (object) array('testcode' => 'sqr(0)',
                           'output'     => '0',
-                          'hidden'     => 0),
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail'  => 0),
             (object) array('testcode' => 'sqr(1)',
                           'output'     => '1',
-                          'hidden'     => 0),
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0),
             (object) array('testcode' => 'sqr(11)',
                           'output'     => '121',
-                          'hidden'     => 0),
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0),
             (object) array('testcode' => 'sqr(-7)',
                           'output'     => '49',
-                          'hidden'     => 0),
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0),
             (object) array('testcode' => 'sqr(-6)',  // The last testcase must be hidden
-                          'output'     => '36',
-                          'hidden'     => 1)
+                           'output'     => '36',
+                           'useasexample' => 0,
+                           'display' => 'HIDE',
+                           'hiderestiffail' =>  0)
         );
         $pycode->qtype = question_bank::get_qtype('pycode');
         $pycode->unitgradingtype = 0;
@@ -87,16 +97,24 @@ class qtype_pycode_test_helper extends question_test_helper {
         $pycode->testcases = array(
             (object) array('testcode' => 'sayHello("")',
                           'output'      => 'Hello ',
-                          'hidden'      => 0),
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0),
             (object) array('testcode' => 'sayHello("Angus")',
                           'output'      => 'Hello Angus',
-                          'hidden'      => 0),
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0),
             (object) array('testcode' => "name = 'Angus'\nsayHello(name)",
                           'output'      => 'Hello Angus',
-                          'hidden'      => 0),
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0),
             (object) array('testcode' => "name = 'Angus'\nname\nprint name\nsayHello(name)",
-                          'output'      => "'Angus'\nAngus\nHello Angus",
-                          'hidden'      => 0)
+                          'output'  => "'Angus'\nAngus\nHello Angus",
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0)
         );
         $pycode->qtype = question_bank::get_qtype('pycode');
         $pycode->unitgradingtype = 0;
@@ -120,19 +138,27 @@ class qtype_pycode_test_helper extends question_test_helper {
             (object) array('testcode' => 'copyStdin(0)',
                           'stdin'       => '',
                           'output'      => '',
-                          'hidden'      => 0),
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0),
             (object) array('testcode' => 'copyStdin(1)',
                           'stdin'       => "Line1\nLine2\n",
                           'output'      => "Line1\n",
-                          'hidden'      => 0),
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0),
             (object) array('testcode' => 'copyStdin(2)',
                           'stdin'       => "Line1\nLine2\n",
                           'output'      => "Line1\nLine2\n",
-                          'hidden'      => 0),
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0),
             (object) array('testcode' => 'copyStdin(3)',
                           'stdin'       => "Line1\nLine2\n",
                           'output'      => "Line1\nLine2\n", # Irrelevant - runtime error
-                          'hidden'      => 0)
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0)
         );
         $pycode->qtype = question_bank::get_qtype('pycode');
         $pycode->unitgradingtype = 0;
@@ -155,7 +181,9 @@ class qtype_pycode_test_helper extends question_test_helper {
             (object) array('testcode' => 'timeout()',
                           'stdin'       => '',
                           'output'      => '',
-                          'hidden'      => 0)
+                          'useasexample' => 0,
+                          'display' => 'SHOW',
+                          'hiderestiffail' =>  0)
         );
         $pycode->qtype = question_bank::get_qtype('pycode');
         $pycode->unitgradingtype = 0;
@@ -182,9 +210,11 @@ class qtype_pycode_test_helper extends question_test_helper {
   print "No exception"
 except ValueError:
   print "Exception"',
-                          'stdin'       => '',
-                          'output'      => 'Exception',
-                          'hidden'      => 0),
+                            'stdin'       => '',
+                            'output'      => 'Exception',
+                            'useasexample' => 0,
+                            'display'     => 'SHOW',
+                            'hiderestiffail' =>  0),
             (object) array('testcode' => 'for n in [1, 11, 84, 990, 7, 8]:
   try:
      checkOdd(n)
@@ -193,7 +223,9 @@ except ValueError:
      print "Yes"',
                           'stdin'       => '',
                           'output'      => "Yes\nYes\nNo\nNo\nYes\nNo\n",
-                          'hidden'      => 0)                              
+                          'useasexample' => 0,
+                          'display'     => 'SHOW',
+                          'hiderestiffail' =>  0)                              
         );
         $pycode->qtype = question_bank::get_qtype('pycode');
         $pycode->unitgradingtype = 0;

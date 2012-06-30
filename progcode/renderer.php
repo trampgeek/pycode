@@ -86,7 +86,13 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         $currentrating = $qa->get_last_qt_var('rating', 0);
         $qtext .= html_writer::tag('textarea', s($currentanswer), $ta_attributes);
         
-        if (SHOW_STATISTICS) {
+        if ($qa->get_state() == question_state::$invalid) {
+            $qtext .= html_writer::nonempty_tag('div',
+                    $question->get_validation_error(array('answer' => $currentanswer)),
+                    array('class' => 'validationerror'));
+        }
+        
+        if (SHOW_STATISTICS && isset($question->stats)) {
             $stats = $question->stats;
             $retries = sprintf("%.1f", $stats->average_retries);
             $stats_text = "Statistics: {$stats->attempts} attempts";
@@ -174,9 +180,10 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         $tableData = array();
         $testCaseKeys = array_keys($testCases);  // Arbitrary numeric indices. Aarghhh.
         $i = 0;
+      
         foreach ($testResults as $testResult) {
             $testCase = $testCases[$testCaseKeys[$i]];
-            if (!$testCase->hidden) {
+            if ($this->shouldDisplayResult($testCase, $testResult)) {
                 $tableRow = array();
                 $result = $testResult->output;
                 if ($numTests) {
@@ -200,6 +207,9 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
                 $tableData[] = $rowWithLineBreaks;
             }
             $i++;
+            if ($testCase->hiderestiffail && !$testResult->isCorrect) {
+                break;
+            }
         }
         $table->data = $tableData;
         $resultTableHtml = html_writer::table($table);
@@ -214,14 +224,19 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
             $lines[] = get_string('noerrorsallowed', 'qtype_pycode');
         } else {
             $numErrors = $this->count_errors($testResults);
+            $hiddenErrors = $this->count_hidden_errors($testResults, $testCases);
             if ($numErrors > 0) {
-                if ($numErrors == $this->count_hidden_errors($testResults, $testCases)) {
+                if ($numErrors == $hiddenErrors) {
                     // Only hidden tests were failed
                     $lines[] = get_string('failedhidden', 'qtype_pycode');
                 }
+                else if ($hiddenErrors > 0) {
+                    $lines[] = get_string('morehidden', 'qtype_pycode');
+                }
                 $lines[] = get_string('noerrorsallowed', 'qtype_pycode');
             } else {
-                $lines[] = get_string('allok', 'qtype_pycode') .
+                $lines[] = 
+                $isDisplayed = FALSE;get_string('allok', 'qtype_pycode') .
                         "&nbsp;" . $this->feedback_image(1.0);
                 ;
             }
@@ -345,21 +360,39 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         return $errors;
     }
     
-    // Count the number of errors in hidden questions, given the arrays of
+    // Count the number of errors in hidden testcases, given the arrays of
     // testcases and testresults. A slight complication here is that the testcase keys
     // are arbitrary integers.
     private function count_hidden_errors($testResults, $testCases) {
         $testCaseKeys = array_keys($testCases);  // Arbitrary numeric indices. Aarghhh.
         $i = 0;
         $count = 0;
+        $hidingRest = FALSE;
         foreach ($testResults as $tr) {
             $testCase = $testCases[$testCaseKeys[$i]];
-            if ($testCase->hidden && !$tr->isCorrect) {
+            if ($hidingRest) {
+                $isDisplayed = FALSE;
+            }
+            else {
+                $isDisplayed = $this->shouldDisplayResult($testCase, $tr);
+            }
+            if (!$isDisplayed && !$tr->isCorrect) {
                 $count++;
+            }
+            if ($testCase->hiderestiffail && !$tr->isCorrect) {
+                $hidingRest = TRUE;
             }
             $i++;
         }
         return $count;
+    }
+    
+    
+    // True iff the given test result should be displayed
+    private function shouldDisplayResult($testCase, $testResult) {
+        return ($testCase->display == 'SHOW') ||
+            ($testCase->display == 'HIDE_IF_FAIL' && $testResult->isCorrect) ||
+            ($testCase->display == 'HIDE_IF_SUCCEED' && !$testResult->isCorrect);
     }
     
 }
