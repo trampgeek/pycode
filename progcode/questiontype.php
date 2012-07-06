@@ -334,6 +334,7 @@ class qtype_progcode extends question_type {
             $expout .= "        </output>\n";
             $expout .= "        <display>\n";
             $expout .= $format->writetext($testcase->display, 4);
+            $expout .= "        </display>\n";
             $expout .= "    </testcase>\n";
         }
         $expout .= "    </testcases>\n";
