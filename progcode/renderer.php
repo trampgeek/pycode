@@ -108,8 +108,8 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
             else {
                 $stats_text .= '.';
             }
+            
             $qtext .= html_writer::tag('p', $stats_text);
-
 
             $ratingSelector = html_writer::select(
                     array(1=>'Like', 2=>'Neutral', 3=>'Dislike'),
