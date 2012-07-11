@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 define('FORCE_TABULAR_EXAMPLES', TRUE);
-define('SHOW_STATISTICS', TRUE);  // If TRUE, shows stats on all progcode-type questions
+define('SHOW_STATISTICS', FALSE);  // If TRUE, shows stats on all progcode-type questions
 
 /**
  * Subclass for generating the bits of output specific to progcode questions.
@@ -85,20 +85,20 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         $currentanswer = $qa->get_last_qt_var('answer');
         $currentrating = $qa->get_last_qt_var('rating', 0);
         $qtext .= html_writer::tag('textarea', s($currentanswer), $ta_attributes);
-        
+
         if ($qa->get_state() == question_state::$invalid) {
             $qtext .= html_writer::nonempty_tag('div',
                     $question->get_validation_error(array('answer' => $currentanswer)),
                     array('class' => 'validationerror'));
         }
-        
+
         if (SHOW_STATISTICS && isset($question->stats)) {
             $stats = $question->stats;
             $retries = sprintf("%.1f", $stats->average_retries);
             $stats_text = "Statistics: {$stats->attempts} attempts";
             if ($stats->attempts) {
                 $stats_text .=
-                    " ({$stats->success_percent}% successful)." . 
+                    " ({$stats->success_percent}% successful)." .
                     " Average submissions per attempt: {$retries}.";
                 if ($stats->likes + $stats->neutrals + $stats->dislikes > 0) {
                     $stats_text .= "<br />" .
@@ -108,13 +108,13 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
             else {
                 $stats_text .= '.';
             }
-            $qtext .= html_writer::tag('p', $stats_text);   
+            $qtext .= html_writer::tag('p', $stats_text);
         }
-        
+
         $ratingSelector = html_writer::select(
                 array(1=>'Like', 2=>'Neutral', 3=>'Dislike'),
                 $qa->get_qt_field_name('rating'),
-                $currentrating);        
+                $currentrating);
         $qtext .= html_writer::tag('p', 'My rating of this question (optional): ' . $ratingSelector);
         return $qtext;
 
@@ -163,9 +163,9 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
     private function buildResultsTable($testCases, $testResults) {
         // First determine which columns are required in the result table
         // by looking for occurrences of testcode and stdin data in the tests.
-        
+
         list($numStdins, $numTests) = $this->countBits($testCases);
-        
+
         $table = new html_table();
         $table->attributes['class'] = 'progcode-test-results';
         $table->head = array();
@@ -176,11 +176,11 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
             $table->head[] = 'Stdin';
         }
         $table->head = array_merge($table->head, array('Expected', 'Got', ''));
-        
+
         $tableData = array();
         $testCaseKeys = array_keys($testCases);  // Arbitrary numeric indices. Aarghhh.
         $i = 0;
-      
+
         foreach ($testResults as $testResult) {
             $testCase = $testCases[$testCaseKeys[$i]];
             if ($this->shouldDisplayResult($testCase, $testResult)) {
@@ -235,7 +235,7 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
                 }
                 $lines[] = get_string('noerrorsallowed', 'qtype_pycode');
             } else {
-                $lines[] = 
+                $lines[] =
                 $isDisplayed = FALSE;get_string('allok', 'qtype_pycode') .
                         "&nbsp;" . $this->feedback_image(1.0);
                 ;
@@ -252,8 +252,8 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         $para .= html_writer::end_tag('p');
         return $para;
     }
-    
-  
+
+
     // Format one or more examples
     protected function formatExamples($examples) {
         if ($this->allSingleLine($examples) && ! FORCE_TABULAR_EXAMPLES) {
@@ -263,8 +263,8 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
             return $this->formatExamplesAsTable($examples);
         }
     }
-    
-    
+
+
     // Return true iff there is no standard input and all output and shell
     // input cases are single line only
     private function allSingleLine($examples) {
@@ -278,8 +278,8 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
          return TRUE;
     }
 
-    
-    
+
+
     // Return a '<br>' separated list of expression -> result examples.
     // For use only where there is no stdin and shell input is one line only.
     private function formatExamplesOnePerLine($examples) {
@@ -290,8 +290,8 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
        }
        return $text;
     }
-    
-    
+
+
     private function formatExamplesAsTable($examples) {
         // TODO: consider if ccode version should use column headers of
         // "Standard input" and "Standard output" rather than just Input
@@ -307,7 +307,7 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
             $table->head[] = 'Test';
         }
         $table->head[] = 'Output';
-        
+
         $tableRows = array();
         foreach ($examples as $example) {
             $row = array();
@@ -323,8 +323,8 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         $table->data = $tableRows;
         return html_writer::table($table);
     }
-    
-    
+
+
     // Return a count of the number of non-empty stdins and non-empty shell
     // inputs in the given list of test objects or examples
     private function countBits($tests) {
@@ -340,9 +340,9 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         }
         return array($numStds, $numShell);
     }
-    
-    
-    
+
+
+
     // Replace all newline chars in a string with HTML line breaks.
     // Also replace spaces with &nbsp;
     private function addLineBreaks($s) {
@@ -359,7 +359,7 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         }
         return $errors;
     }
-    
+
     // Count the number of errors in hidden testcases, given the arrays of
     // testcases and testresults. A slight complication here is that the testcase keys
     // are arbitrary integers.
@@ -386,13 +386,13 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
         }
         return $count;
     }
-    
-    
+
+
     // True iff the given test result should be displayed
     private function shouldDisplayResult($testCase, $testResult) {
         return ($testCase->display == 'SHOW') ||
             ($testCase->display == 'HIDE_IF_FAIL' && $testResult->isCorrect) ||
             ($testCase->display == 'HIDE_IF_SUCCEED' && !$testResult->isCorrect);
     }
-    
+
 }
