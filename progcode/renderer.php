@@ -109,13 +109,14 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
                 $stats_text .= '.';
             }
             $qtext .= html_writer::tag('p', $stats_text);
-        }
 
-        $ratingSelector = html_writer::select(
-                array(1=>'Like', 2=>'Neutral', 3=>'Dislike'),
-                $qa->get_qt_field_name('rating'),
-                $currentrating);
-        $qtext .= html_writer::tag('p', 'My rating of this question (optional): ' . $ratingSelector);
+
+            $ratingSelector = html_writer::select(
+                    array(1=>'Like', 2=>'Neutral', 3=>'Dislike'),
+                    $qa->get_qt_field_name('rating'),
+                    $currentrating);
+            $qtext .= html_writer::tag('p', 'My rating of this question (optional): ' . $ratingSelector);
+        }
         return $qtext;
 
         // TODO: consider how to prevent multiple submits while one submit in progress
