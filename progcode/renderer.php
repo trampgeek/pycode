@@ -54,7 +54,7 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
                     return $tc->useasexample;
                 });
         if (count($examples) > 0) {
-            $qtext .= html_writer::tag('p', 'For example:', array());
+            $qtext .= html_writer::tag('p', 'For example:', array('class' => 'for-example-para'));
             $qtext .= html_writer::start_tag('div', array('class' => 'progcode-examples'));
             $qtext .= $this->formatExamples($examples);
             $qtext .= html_writer::end_tag('div');
@@ -108,7 +108,7 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
             else {
                 $stats_text .= '.';
             }
-            
+
             $qtext .= html_writer::tag('p', $stats_text);
 
             $ratingSelector = html_writer::select(

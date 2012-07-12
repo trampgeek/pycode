@@ -1,6 +1,6 @@
 textarea.pycode-answer, table.pycode-test-results td,
 table.pycodeexamples td,
-.testcaseexpression, .testcaseresult, .testcasestdin { 
+.testcaseexpression, .testcaseresult, .testcasestdin {
     font-family:courier,monospace;
 }
 
@@ -8,15 +8,19 @@ textarea.pycode-answer {
     width:100%;
 }
 
+p.for-example-para {
+    font-weight: bold;
+}
+
 div.pycode-examples {
     padding-bottom: 10px;
 }
 
-div.outcome {      
+div.outcome {
     overflow: auto;
 }
 
-table.pycode-test-results td, table.pycode-test-results th, 
+table.pycode-test-results td, table.pycode-test-results th,
 table.pycodeexamples td, table.pycodeexamples th {
     border: 1px solid #B0B0B0;
 }
