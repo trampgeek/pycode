@@ -14,7 +14,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 ///////////////////
 /// progcode ///
 ///////////////////
@@ -22,7 +22,7 @@
 // The base class for programming code questions like pycode and ccode
 // A progcode question consists of a specification for piece of program
 // code, which might be a function or a complete program or (possibly in the
-// future) a fragment of code. 
+// future) a fragment of code.
 // The student's response must be source code that defines
 // the specified function. The student's code is executed by
 // a set of test cases, all of which must pass for the question
@@ -42,6 +42,7 @@
  * @author 	Richard Lobb richard.lobb@canterbury.ac.nz
  */
 
+define('COMPUTE_STATS', false);
 
 /**
  * qtype_progcode extends the base question_type to progcode-specific functionality.
@@ -52,7 +53,7 @@
  * Each subclass cas its own testcase database table.
  */
 class qtype_progcode extends question_type {
-    
+
     /**
      * Whether this question type can perform a frequency analysis of student
      * responses.
@@ -67,8 +68,8 @@ class qtype_progcode extends question_type {
     public function can_analyse_responses() {
         return FALSE;  // TODO Consider if this functionality should be enabled
     }
-    
-    
+
+
     /**
      * Abstract function implemented by each question type. It runs all the code
      * required to set up and save a question of any type for testing purposes.
@@ -83,8 +84,8 @@ class qtype_progcode extends question_type {
         // which would need to be different for each subclass anyway.
         throw new coding_exception('Unexpected call to generate_test. Read code for details.');
     }
-    
-    
+
+
     // Function to copy testcases from form fields into question->testcases
     private function copy_testcases_from_form(&$question) {
         $testcases = array();
@@ -113,7 +114,7 @@ class qtype_progcode extends question_type {
 
     // This override saves the set of testcases to the database
     // Note that the parameter isn't a question object, but the question form
-    // (or a mock-up of it). See questiontypebase.php. 
+    // (or a mock-up of it). See questiontypebase.php.
     // Can't use the default get/save_question_options methods as there
     // are arbitrarily many testcases.
 
@@ -156,25 +157,29 @@ class qtype_progcode extends question_type {
     // into the 'question' (which is actually a pycode/ccode/etc question edit form).
     public function get_question_options(&$question) {
         global $CFG, $DB, $OUTPUT;
-        
+
         $q_type = $this->name();
         $table_name = "question_" . $this->name() . "_testcases";
-        
+
         if (!$question->testcases = $DB->get_records_sql("
-                    SELECT * 
+                    SELECT *
                     FROM {" . $table_name ."}
                     WHERE questionid = ?", array($question->id))) {
 
             echo $OUTPUT->notification("Failed to load testcases from the table $table_name for question id {$question->id}");
             return false;
         }
-        
-        $question->stats = $this->get_question_stats($question->id);
+
+        if (COMPUTE_STATS) {
+            $question->stats = $this->get_question_stats($question->id);
+        } else {
+            $question->stats = null;
+        }
 
         return true;
     }
-    
-    
+
+
     // The 'questiondata' here is actually (something like) a pycode/ccode/etc question
     // edit form, and we need to extend the baseclass method to copy the
     // testcases and stats across to the under-creation question definition.
@@ -184,7 +189,7 @@ class qtype_progcode extends question_type {
         $question->stats = $questiondata->stats;
     }
 
-    
+
     // Delete the testcases when this question is deleted.
     public function delete_question($questionid, $contextid) {
         global $DB;
@@ -194,8 +199,8 @@ class qtype_progcode extends question_type {
         return $success && parent::delete_question($questionid, $contextid);
     }
 
-      
-    
+
+
     // Query the database to get the statistics of attempts and ratings for
     // a given question.
     private function get_question_stats($question_id) {
@@ -204,7 +209,7 @@ class qtype_progcode extends question_type {
             SELECT questionattemptid, fraction, rating, sequencenumber
             FROM mdl_question_attempts as qa,
                         mdl_question_attempt_steps as qas
-            LEFT JOIN 
+            LEFT JOIN
                 ( SELECT value as rating, attemptstepid
                   FROM  mdl_question_attempt_step_data
                   WHERE name = 'rating'
@@ -219,14 +224,14 @@ class qtype_progcode extends question_type {
                   WHERE mdl_question_attempt_steps.questionattemptid = qa.id
                 )",
             array($question_id));
-  
+
         $num_attempts = 0;
         $num_successes = 0;
         $counts = array(0, 0, 0, 0);
         $num_steps = 0;
         foreach ($attempts as $attempt) {
             $rating = isset($attempt->rating) ? $attempt->rating : 0;
-            $counts[$rating]++;  
+            $counts[$rating]++;
             if ($attempt->fraction > 0.0) {
                 $num_successes++;
             }
@@ -235,18 +240,17 @@ class qtype_progcode extends question_type {
                 $num_steps += $attempt->sequencenumber;
             }
         }
-        
+
         $success_percent = $num_attempts == 0 ? 0 : intval(100.0 * $num_successes / $num_attempts);
         $average_retries = $num_attempts == 0 ? 0 : $num_steps / $num_attempts;
         $stats = (object) array(
             'question_id' => $question_id,
-            'attempts' => $num_attempts,
+            'attempts'    => $num_attempts,
             'success_percent' => $success_percent,
             'average_retries' => $average_retries,
-            'likes' => $counts[1],
+            'likes'    => $counts[1],
             'neutrals' => $counts[2],
             'dislikes' => $counts[3]);
-        //if ($stats->likes)   debugging(print_r($stats, TRUE));
         return $stats;
     }
 
@@ -328,7 +332,7 @@ class qtype_progcode extends question_type {
             $expout .= "        </testcode>\n";
             $expout .= "        <stdin>\n";
             $expout .= $format->writetext($testcase->stdin, 4);
-            $expout .= "        </stdin>\n";            
+            $expout .= "        </stdin>\n";
             $expout .= "        <output>\n";
             $expout .= $format->writetext($testcase->output, 4);
             $expout .= "        </output>\n";

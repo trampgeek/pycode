@@ -26,7 +26,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 define('FORCE_TABULAR_EXAMPLES', TRUE);
+
 define('SHOW_STATISTICS', FALSE);  // If TRUE, shows stats on all progcode-type questions
+// Warning! For this to be workable, COMPUTE_STATS in questiontype.php must be
+// true. The feature has been disabled as it brings the database server to its
+// knees when there are large numbers of question submissions to compute stats
+// from.
 
 /**
  * Subclass for generating the bits of output specific to progcode questions.
@@ -92,7 +97,7 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
                     array('class' => 'validationerror'));
         }
 
-        if (SHOW_STATISTICS && isset($question->stats)) {
+        if (SHOW_STATISTICS && isset($question->stats) && $question->stats) {
             $stats = $question->stats;
             $retries = sprintf("%.1f", $stats->average_retries);
             $stats_text = "Statistics: {$stats->attempts} attempts";
