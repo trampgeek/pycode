@@ -204,6 +204,10 @@ class qtype_progcode extends question_type {
     // Query the database to get the statistics of attempts and ratings for
     // a given question.
     private function get_question_stats($question_id) {
+        // TODO: this query kills the DB server! If stats gathering is to
+        // be turned on again it must be restructured, e.g. have the subquery
+        // filter by attemptstepid rather than name, then select subset with
+        // right name.
         global $DB;
         $attempts = $DB->get_records_sql("
             SELECT questionattemptid, fraction, rating, sequencenumber
