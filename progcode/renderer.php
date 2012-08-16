@@ -26,6 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 define('FORCE_TABULAR_EXAMPLES', TRUE);
+define('MAX_LINE_LENGTH', 120);
+define('MAX_NUM_LINES', 200);
 
 define('SHOW_STATISTICS', FALSE);  // If TRUE, shows stats on all progcode-type questions
 // Warning! For this to be workable, COMPUTE_STATS in questiontype.php must be
@@ -193,15 +195,14 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
                 $tableRow = array();
                 $result = $testResult->output;
                 if ($numTests) {
-                    $testcode = $testCase->testcode;
-                    $tableRow[] = s($testcode);
+                    $tableRow[] = s(restrict_qty($testCase->testcode));
                 }
                 if ($numStdins) {
-                    $tableRow[] = s($testCase->stdin);
+                    $tableRow[] = s(restrict_qty($testCase->stdin));
                 }
                 $tableRow = array_merge($tableRow, array(
-                    s($testCase->output),
-                    s($result)
+                    s(restrict_qty($testCase->output)),
+                    s(restrict_qty($result))
                 ));
 
                 $rowWithLineBreaks = array();
@@ -401,4 +402,42 @@ abstract class qtype_progcode_renderer extends qtype_renderer {
             ($testCase->display == 'HIDE_IF_SUCCEED' && !$testResult->isCorrect);
     }
 
+}
+
+
+/* Support function to limit the size of a string for browser display.
+ * Restricts line length to MAX_LINE_LENGTH and number of lines to
+ * MAX_NUM_LINES.
+ */
+function restrict_qty($s) {
+    $result = '';
+    $n = strlen($s);
+    $line = '';
+    $lineLen = 0;
+    $numLines = 0;
+    for ($i = 0; $i < $n && $numLines < MAX_NUM_LINES; $i++) {
+        if ($s[$i] != "\n") {
+            if ($lineLen < MAX_LINE_LENGTH) {
+                $line .= $s[$i];
+            }
+            elseif ($lineLen == MAX_LINE_LENGTH) {
+                $line[MAX_LINE_LENGTH - 1] = $line[MAX_LINE_LENGTH - 2] =
+                $line[MAX_LINE_LENGTH -3] = '.';
+            }
+            else {
+                /* ignore remainder of line */
+            }
+            $lineLen++;
+        }
+        else {
+            $result .= $line . "\n";
+            $line = '';
+            $lineLen = 0;
+            $numLines += 1;
+            if ($numLines == MAX_NUM_LINES) {
+                $result .= "[... snip ...]\n";
+            }
+        }
+    }
+    return $result . $line;
 }
