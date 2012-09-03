@@ -17,8 +17,7 @@ class PycodeConsole (code.InteractiveConsole):
         
     def open(self, filename, mode = 'r'):
         '''Open a file for reading or writing. See 'PycodeFile' class below'''
-        mode = mode.replace('b','')
-        return PycodeFile(filename, mode.lower())
+        return PycodeFile(filename, mode)
                 
         
     def setInput(self, inputString):
@@ -96,6 +95,7 @@ class PycodeFile:
     file_sys = {}  # A map from file name to string contents of file
     
     def __init__(self, filename, mode):
+        mode = mode.replace('b', '')
         self.filename = filename
         self.mode = mode
         self.closed = False
@@ -160,16 +160,23 @@ class PycodeFile:
             raise IOError('Attempt to write to or truncate a file open for reading')
           
     def __iter__(self):
-        return self._iterator()  
-            
-    def _iterator(self):
+        return self
+
+    def next(self):
         line = self.readline()
-        while line:
-            yield line
-            line = self.readline()
+        if line:
+            return line
+        else:
+            raise StopIteration
 
     def close(self):
         self.closed = True
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
         
     def flush(self):
         pass
