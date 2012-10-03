@@ -6,7 +6,13 @@ ABOUT PYCODE
 
 pycode is a Moodle question type that requests students to submit python code to some given specification, e.g. a function sqr(x) that returns its parameter squared. The submission is graded by running a series of testcases of the code in a sandbox, comparing the output with the expected output. If all testcases pass, the question is deemed correct, otherwise it is incorrect. pycode is expected to be run in a special adaptive mode, so the student submits each question one by one repeatedly, until a correct result is obtained. Their mark for the question is then determined by the number of submissions and the per-submission penalty set within Moodle in the usual way.
 
-pycode requires a Moodle version >= 2.1 and provides quiz questions in Python 2.7.
+pycode requires a Moodle version >= 2.1 and provides quiz questions in Python 2.7. It has been extensively used over four
+semesters with first-year computer science classes of several hundred students. For the last three semesters we have
+also used it for running term tests, with around 100 students in each test sitting. It has processed hundreds of thousands
+of questions submissions with no major issues.
+
+INSTALLATION
+============
 
 There are two steps involved in installing the pycode module: first install the pypy sandbox then install the Moodle pycode question type plug-in and its associated behaviour module.
 
