@@ -10,12 +10,18 @@ pass, the question is deemed correct, otherwise it is incorrect. pycode is expec
 question one by one repeatedly, until a correct result is obtained. Their mark for the question is then determined by the number of submissions and
 the per-submission penalty set within Moodle in the usual way.
 
-A. Installing pypy
+pycode requires a Moodle version >= 2.1.
+
+There are two steps involved in installing the pycode module: first install 
+the pypy sandbox then install the Moodle pycode question type plug-in and
+its associated behaviour module.
+
+A. Install pypy
 
 pycode uses the pypy standbox (see pypy.org) to securely run the submitted
 python programs. To avoid problems with the constant stream of pypy updates,
 and to add a little bit of my own code as a front end, I've forked the base
-pypy distribution; my fork is available as a mercurial
+pypy distribution; my fork is available as a mercurial 
 distribution at https://bitbucket.org/trampgeek/pypy-sandbox-4-pycode/wiki/Home.
 Unfortunately, this has to be built from source. The steps are:
 
@@ -34,20 +40,21 @@ Unfortunately, this has to be built from source. The steps are:
     Ensure the whole pypy-sandbox-4-pycode subtree is readable and (where
     appropriate) executable by the web server.
 
-B. Install the new moodle quiz question behaviour.
-    A special Moodle quiz question behaviour is required for pycode, called
-    adaptive_adapted_for_pycode. [It's adapted for progcode rather than
+B. Install pycode
+
+1.  A special Moodle quiz question behaviour is required for pycode, called
+    adaptive_adapted_for_pycode. [It's adapted for progcode rather than 
     pycode to accommodate other subclasses of progcode, such as ccode].
     It's available as a GIT repo. Install it by:
     git clone https://github.com/trampgeek/adaptive_adapted_for_progcode
     sudo mv adaptive_adapted_for_progcode/ <moodle_base>/question/behaviour/
 
-C. Install the pycode quiz question
+2.  Install the pycode quiz question
     The Moodle question plugin itself can now be installed by:
     git clone https://github.com/trampgeek/pycode
     sudo mv pycode <moodle_base>/question/type/
 
-D. Test it in Moodle by:
+3. Test it in Moodle by:
     Logging in as an administrator
     You should be told there are modules available to update.
     Update them.
