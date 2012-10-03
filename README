@@ -14,6 +14,12 @@ question one by one repeatedly, until a correct result is obtained. Their
 mark for the question is then determined by the number of submissions and
 the per-submission penalty set within Moodle in the usual way.
 
+pycode requires a Moodle version >= 2.1.
+
+There are two steps involved in installing the pycode module: first install 
+the pypy sandbox then install the Moodle pycode question type plug-in and
+its associated behaviour module.
+
 A. Install pypy
 
 pycode uses the pypy standbox (see pypy.org) to securely run the submitted
