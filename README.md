@@ -4,14 +4,10 @@ ABOUT PYCODE
 @version 26 May 2012
 @author Richard Lobb, University of Canterbury, New Zealand.
 
-pycode is a Moodle question type that requests students to submit python code to
-some given specification, e.g. a function sqr(x) that returns its parameter
-squared. The submission is graded by running a series of testcases of the code
-in a sandbox, comparing the output with the expected output. If all testcases
-pass, the question is deemed correct, otherwise it is incorrect. pycode is
-expected to be run in a special adaptive mode, so the student submits each
-question one by one repeatedly, until a correct result is obtained. Their
-mark for the question is then determined by the number of submissions and
+pycode is a Moodle question type that requests students to submit python code to some given specification, e.g. a function sqr(x) that returns its parameter
+squared. The submission is graded by running a series of testcases of the code in a sandbox, comparing the output with the expected output. If all testcases
+pass, the question is deemed correct, otherwise it is incorrect. pycode is expected to be run in a special adaptive mode, so the student submits each
+question one by one repeatedly, until a correct result is obtained. Their mark for the question is then determined by the number of submissions and
 the per-submission penalty set within Moodle in the usual way.
 
 A. Installing pypy
@@ -19,7 +15,7 @@ A. Installing pypy
 pycode uses the pypy standbox (see pypy.org) to securely run the submitted
 python programs. To avoid problems with the constant stream of pypy updates,
 and to add a little bit of my own code as a front end, I've forked the base
-pypy distribution; my fork is available as a mercurial 
+pypy distribution; my fork is available as a mercurial
 distribution at https://bitbucket.org/trampgeek/pypy-sandbox-4-pycode/wiki/Home.
 Unfortunately, this has to be built from source. The steps are:
 
@@ -40,7 +36,7 @@ Unfortunately, this has to be built from source. The steps are:
 
 B. Install the new moodle quiz question behaviour.
     A special Moodle quiz question behaviour is required for pycode, called
-    adaptive_adapted_for_pycode. [It's adapted for progcode rather than 
+    adaptive_adapted_for_pycode. [It's adapted for progcode rather than
     pycode to accommodate other subclasses of progcode, such as ccode].
     It's available as a GIT repo. Install it by:
     git clone https://github.com/trampgeek/adaptive_adapted_for_progcode
