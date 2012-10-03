@@ -23,12 +23,12 @@ pycode uses the pypy standbox (see pypy.org) to securely run the submitted pytho
 
 3. Build the sandbox by:
 
-    cd /usr/local/pypy-sandbox-4-pycode/pypy/translator/goal
-    python translate.py -O2 --sandbox
+        cd /usr/local/pypy-sandbox-4-pycode/pypy/translator/goal
+        python translate.py -O2 --sandbox
 
  [After at least half an hour and possibly several hours ...]
 
-    mv pypy-c /usr/local/pypy-sandbox-4-pycode/pypy/translator/sandbox/pypy-sandbox
+        mv pypy-c /usr/local/pypy-sandbox-4-pycode/pypy/translator/sandbox/pypy-sandbox
 
 Ensure the whole pypy-sandbox-4-pycode subtree is readable and (where appropriate) executable by the web server.
 
@@ -36,21 +36,22 @@ B. Install pycode
 
 1.  A special Moodle quiz question behaviour is required for pycode, called adaptive_adapted_for_pycode. [It's adapted for progcode rather than pycode to accommodate other subclasses of progcode, such as ccode]. It's available as a GIT repo. Install it by:
 
-    git clone https://github.com/trampgeek/adaptive_adapted_for_progcode
-    sudo mv adaptive_adapted_for_progcode/ <moodle_base>/question/behaviour/
+        git clone https://github.com/trampgeek/adaptive_adapted_for_progcode
+        sudo mv adaptive_adapted_for_progcode/ <moodle_base>/question/behaviour/
 
 2.  Install the pycode quiz question plug-in itself by:
 
-    git clone https://github.com/trampgeek/pycode
-    sudo mv pycode <moodle_base>/question/type/
+        git clone https://github.com/trampgeek/pycode
+        sudo mv pycode <moodle_base>/question/type/
 
 3. Test it in Moodle by:
-* Logging in as an administrator
-* You should be told there are modules available to update.
-* Update them.
-* Select Settings > Site administrations > Development > Unit tests
-* Run the tests in folder question/type/pycode
-* You shouldn't get any errors. If you do, you're in trouble. Panic.
+
+   * Logging in as an administrator
+   * You should be told there are modules available to update.
+   * Update them.
+   * Select Settings > Site administrations > Development > Unit tests
+   * Run the tests in folder question/type/pycode
+   * You shouldn't get any errors. If you do, you're in trouble. Panic.
 
 An issue with SELinux
 ---------------------
