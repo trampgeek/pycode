@@ -26,7 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$SANDBOX = "/usr/local/pypy-sandbox-4-pycode/pypy/translator/sandbox/pycodeTest.py";
+//$SANDBOX = "/usr/local/pypy-sandbox-4-pycode/pypy/translator/sandbox/pycodeTest.py";
+$SANDBOX = "/usr/local/sandbox/python3/pycodeTest.py";
 
 $GLOBALS['SANDBOX'] = $SANDBOX; // So it works in any context
 
@@ -57,7 +58,7 @@ class qtype_pycode_question extends qtype_progcode_question {
         }
 
         $testsetjson = json_encode(array($code, $testlist));
-    	$testsetencoded = base64_encode($testsetjson); 
+    	$testsetencoded = base64_encode($testsetjson);
         $cmd = "{$GLOBALS['SANDBOX']} \"$testsetencoded\"";
     	$lines = array();
 
@@ -68,7 +69,7 @@ class qtype_pycode_question extends qtype_progcode_question {
             $err = $e->getMessage();
             debugging("Exception $err on calling sandboxed pypy");
     	}
-        
+
         while (count($lines) > 0 && substr($lines[0], 0, 1) == '[') {
             // Filter out any error messages from the sandbox, such as
             // [sandlib: timeout]
@@ -78,7 +79,7 @@ class qtype_pycode_question extends qtype_progcode_question {
     	if (count($lines) == 0) {
             $lines = array('Tester failed', '*** SYSTEM ERROR ***');
     	}
-    	
+
     	$testResults = array();
 
     	for ($i = 0; $i < count($lines) - 1; $i += 2) {
@@ -92,7 +93,7 @@ class qtype_pycode_question extends qtype_progcode_question {
 
     	return $testResults;
     }
-    
+
 }
 
 // *** Utility functions ***

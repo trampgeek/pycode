@@ -39,19 +39,19 @@ class qtype_pycode_question_test extends UnitTestCase {
         $this->qtype = new qtype_pycode_question();
         $this->goodcode = "def sqr(n): return n * n";
     }
-    
+
 
     public function tearDown() {
         $this->qtype = null;
     }
-    
-    
+
+
     public function test_get_question_summary() {
         $q = test_question_maker::make_question('pycode', 'sqr');
         $this->assertEqual('Write a function sqr(n) that returns n squared',
                 $q->get_question_summary());
     }
-    
+
 
     public function test_summarise_response() {
         $s = $this->goodcode;
@@ -59,13 +59,13 @@ class qtype_pycode_question_test extends UnitTestCase {
         $this->assertEqual($s,
                $q->summarise_response(array('answer' => $s)));
     }
-    
-    
+
+
     public function test_sandbox() {
         $testlist = array(array('double(1)', '2'));
         $code = 'def double(n): return 2 * n';
         $testsetjson = json_encode(array($code, $testlist));
-    	$testsetencoded = base64_encode($testsetjson); 
+    	$testsetencoded = base64_encode($testsetjson);
         $cmd = "{$GLOBALS['SANDBOX']} \"$testsetencoded\"";
         $lines = array();
         try {
@@ -80,7 +80,7 @@ class qtype_pycode_question_test extends UnitTestCase {
         $this->assertEqual(decodeHex($lines[1]), "2\n");
     }
 
-    
+
     public function test_grade_response_right() {
         $q = test_question_maker::make_question('pycode', 'sqr');
         $response = array('answer' => $this->goodcode);
@@ -94,8 +94,8 @@ class qtype_pycode_question_test extends UnitTestCase {
             $this->assertTrue($tr->isCorrect);
         }
     }
-    
-    
+
+
     public function test_grade_response_wrong_ans() {
         $q = test_question_maker::make_question('pycode', 'sqr');
         $code = "def sqr(x): return x * x * x / abs(x)";
@@ -104,9 +104,9 @@ class qtype_pycode_question_test extends UnitTestCase {
         $this->assertEqual($result[0], 0);
         $this->assertEqual($result[1], question_state::$gradedwrong);
         $this->assertTrue(isset($result[2]['_testresults']));
-    } 
-  
-    
+    }
+
+
     public function test_grade_syntax_error() {
         $q = test_question_maker::make_question('pycode', 'sqr');
         $code = "def sqr(x): return x  x";
@@ -119,8 +119,8 @@ class qtype_pycode_question_test extends UnitTestCase {
         $this->assertEqual(count($testResults), 1);
         $this->assertFalse($testResults[0]->isCorrect);
     }
-    
-    
+
+
     public function test_grade_runtime_error() {
         $q = test_question_maker::make_question('pycode', 'sqr');
         $code = "def sqr(x): return x * y";
@@ -132,9 +132,9 @@ class qtype_pycode_question_test extends UnitTestCase {
         $testResults = unserialize($result[2]['_testresults']);
         $this->assertEqual(count($testResults), 1);
         $this->assertFalse($testResults[0]->isCorrect);
-    }  
+    }
 
-    
+
     public function test_grade_delayed_runtime_error() {
         $q = test_question_maker::make_question('pycode', 'sqr');
         $code = "def sqr(x):\n  if x != 11:\n    return x * x\n  else:\n    return y";
@@ -146,9 +146,9 @@ class qtype_pycode_question_test extends UnitTestCase {
         $testResults = unserialize($result[2]['_testresults']);
         $this->assertEqual(count($testResults), 3);
         $this->assertFalse($testResults[2]->isCorrect);
-    }  
-    
-    
+    }
+
+
     public function test_triple_quotes() {
         $q = test_question_maker::make_question('pycode', 'sqr');
         $code = <<<EOCODE
@@ -170,8 +170,8 @@ EOCODE;
             $this->assertTrue($tr->isCorrect);
         }
     }
-    
-    
+
+
     public function test_helloFunc() {
         // Check a question type with a function that prints output
         $q = test_question_maker::make_question('pycode', 'helloFunc');
@@ -183,9 +183,9 @@ EOCODE;
         $this->assertTrue(isset($result[2]['_testresults']));
         $testResults = unserialize($result[2]['_testresults']);
         $this->assertEqual(count($testResults), 4);
-    } 
-    
-    
+    }
+
+
     public function test_copyStdin() {
         // Check a question that reads stdin and writes to stdout
         $q = test_question_maker::make_question('pycode', 'copyStdin');
@@ -207,7 +207,7 @@ EOCODE;
         $this->assertTrue($testResults[2]->isCorrect);
         $this->assertFalse($testResults[3]->isCorrect);
      }
-     
+
      public function test_timeout() {
          // Check a question that loops forever. Should cause sandbox timeout
         $q = test_question_maker::make_question('pycode', 'timeout');
@@ -220,9 +220,11 @@ EOCODE;
         $testResults = unserialize($result[2]['_testresults']);
         $this->assertEqual(count($testResults), 1);
         $this->assertFalse($testResults[0]->isCorrect);
-        $this->assertEqual($testResults[0]->output, 'SIGTERM (timeout or too much memory?)');
-     } 
-     
+        // Need to accommodate different error messages from the 2 sandboxes
+        $this->assertTrue($testResults[0]->output == 'SIGTERM (timeout or too much memory?)'
+                or $testResults[0]->output == "***Time Limit Exceeded***");
+     }
+
      public function test_exceptions() {
          // Check a function that conditionally throws exceptions
         $q = test_question_maker::make_question('pycode', 'exceptions');
@@ -237,6 +239,6 @@ EOCODE;
         $this->assertEqual(count($testResults), 2);
         $this->assertEqual(trim($testResults[0]->output), 'Exception');
         $this->assertEqual($testResults[1]->output, "Yes\nYes\nNo\nNo\nYes\nNo\n");
-     } 
+     }
 }
 
