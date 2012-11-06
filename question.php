@@ -26,8 +26,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-//$SANDBOX = "/usr/local/pypy-sandbox-4-pycode/pypy/translator/sandbox/pycodeTest.py";
-$SANDBOX = "/usr/local/sandbox/python3/pycodeTest.py";
+$SANDBOX = "/usr/local/pypy-sandbox-4-pycode/pypy/translator/sandbox/pycodeTest.py";
+//$SANDBOX = "/usr/local/sandbox/python3/pycodeTest.py";
 
 $GLOBALS['SANDBOX'] = $SANDBOX; // So it works in any context
 
